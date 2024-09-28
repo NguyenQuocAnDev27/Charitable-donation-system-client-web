@@ -7,7 +7,7 @@ This is a client-side web application designed for managing charitable donations
 - User authentication and registration.
 - Browse and donate to various charity projects.
 - Real-time donation tracking.
-- Admin dashboard for managing projects and user data.
+- Dashboard for managing projects and user profile.
 
 ## Technologies Used
 
