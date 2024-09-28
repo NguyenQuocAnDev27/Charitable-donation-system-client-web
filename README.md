@@ -22,8 +22,8 @@ This is a client-side web application designed for managing charitable donations
    git clone https://github.com/NguyenQuocAnDev27/Charitable-donation-system-client-web.git
 
 2. Install pnpm
-npm i pnpm
+   npm i pnpm
 
 3. Run
-pnpm install
-pnpm dev
+   pnpm install
+   pnpm dev
