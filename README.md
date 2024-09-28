@@ -1,6 +1,6 @@
 # Charitable-donation-system-client-web
 
-This is a client-side web application designed for managing charitable donations, developed using **Next.js** and **Tailwind CSS**. The project aims to facilitate donation management for both users and administrators.
+This is a client-side web application designed for managing charitable donations, developed using **Next.js** and **Tailwind CSS**. The project aims to facilitate donation management for both users.
 
 ## Features
 
