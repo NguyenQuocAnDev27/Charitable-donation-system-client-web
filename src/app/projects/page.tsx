@@ -6,11 +6,15 @@ import SingleProjectMini from "@/components/Projects/SingleProjectMini";
 import ScrollUp from "@/components/Common/ScrollUp";
 import SearchBar from "@/components/Projects/SearchBar";
 import { useFetchProjects } from "@/store/hooks"; // Import the hook
+import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading/Loading";
 
 const Projects = () => {
   const [currentPage, setCurrentPage] = useState(1); // Tracks the current page
   const projectsPerPage = 20; // Number of projects per page
   const [searchQuery, setSearchQuery] = useState(""); // For search
+  const router = useRouter();
+  const [isCallingAPIDone, setIsLoadingAPIDone] = useState(false);
 
   // Fetch projects from the hook
   const { data: projectsData, loading, error, fetchProjects } = useFetchProjects(); // Use hook to fetch projects
@@ -46,14 +50,22 @@ const Projects = () => {
     scrollToTop(); // Scroll up when changing pages
   };
 
+  useEffect(() => {
+    
+  }, [loading, projectsData]);
+
   // Render loading state
-  if (loading) {
-    return <p>Loading projects...</p>;
+  if (loading && isCallingAPIDone) {
+    return (
+      <>
+        <Loading/>
+      </>
+    )
   }
 
   // Render error state
   if (error) {
-    return <p>Error: {error}</p>;
+    router.push('/error');
   }
 
   return (

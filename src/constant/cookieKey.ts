@@ -1,4 +1,4 @@
-// src/constant/cookieKey.tsx
+// src/constant/cookieKey.ts
 
 export const COOKIE_KEYS = {
   ACCESS_TOKEN: "access_token",
