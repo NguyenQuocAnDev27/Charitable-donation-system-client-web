@@ -14,7 +14,8 @@ const SignOutPage = () => {
     eraseCookie(COOKIE_KEYS.USER_NAME);
     eraseCookie(COOKIE_KEYS.USER_EMAIL);
     eraseCookie(COOKIE_KEYS.USER_ID);
-    eraseCookie(COOKIE_KEYS.JWT_TOKEN);
+    eraseCookie(COOKIE_KEYS.ACCESS_TOKEN);
+    eraseCookie(COOKIE_KEYS.REFRESH_TOKEN);
     eraseCookie(COOKIE_KEYS.USER_ROLE);
 
     // Navigate to homepage after sign-out

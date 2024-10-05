@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "devtools": "cross-env NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "eslint": "^9.10.0",
     "eslint-config-next": "^14.2.13",
     "next": "^14.2.13",
@@ -18,7 +22,8 @@
     "react-dom": "^18.3.1",
     "react-modal-video": "^2.0.2",
     "use-debounce": "^10.0.3",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "5.0.0-rc.2"
   },
   "devDependencies": {
     "@types/node": "^22.5.5",

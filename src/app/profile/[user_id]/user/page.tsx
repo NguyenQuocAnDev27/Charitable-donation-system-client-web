@@ -4,9 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation"; // Use useParams for dynamic routes in Next.js 13+
 import { getCookie } from "@/utils/cookiesHandler";
 import Breadcrumb from "@/components/Common/Breadcrumb";
+import { COOKIE_KEYS } from "@/constant/cookieKey";
+import { useGetInfoDetail } from "@/store/hooks/useGetInfoDetail";
+import { useRouter } from "next/navigation";
 
 const UserPage = () => {
   const { user_id } = useParams(); // Get the user_id from the dynamic route
+  const router = useRouter();
+  const access_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+  const email = getCookie(COOKIE_KEYS.USER_EMAIL);
+  const { data, loading: loadingGetInfo, error: errorGetInfo, success: successGetInfo, fetchInfo } = useGetInfoDetail();
 
   const [userData, setUserData] = useState({
     full_name: "",
@@ -15,19 +22,22 @@ const UserPage = () => {
   });
 
   useEffect(() => {
-    // Simulate fetching user details based on user_id
-    if (user_id) {
-      const storedUserName = getCookie("user_name");
-      const storedUserEmail = getCookie("user_email");
-      const storedUserPhone = getCookie("user_phone");
-
-      setUserData({
-        full_name: storedUserName || "No name found",
-        email: storedUserEmail || "No email found",
-        phone_number: storedUserPhone || "No phone number found",
-      });
+    if(access_token) {
+      fetchInfo(email);
     }
-  }, [user_id]);
+  }, []);
+
+  useEffect(() => {
+    if (user_id && access_token) {
+      setUserData({
+        full_name: data?.fullName || "No name found",
+        email: data?.email || "No email found",
+        phone_number: data?.phoneNumber || "No phone number found",
+      });
+    } else {
+      router.push('/signin');
+    }
+  }, [successGetInfo]);
 
   if (!user_id) {
     return <div>Loading...</div>;

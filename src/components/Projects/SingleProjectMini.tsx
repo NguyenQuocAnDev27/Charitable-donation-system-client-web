@@ -1,10 +1,10 @@
 import React from "react";
 import Image from "next/image"; // Import for Next.js Image optimization
-import { ProjectDonate } from "@/types/project";
+import { Project } from "../../interface"; // Assuming this is your updated interface
 
-const SingleProjectMini = ({ project }: { project: ProjectDonate }) => {
+const SingleProjectMini = ({ project }: { project: Project }) => {
   // Calculate time remaining
-  const timeRemaining = (endDate: Date) => {
+  const timeRemaining = (endDate: string) => {
     const now = new Date();
     const end = new Date(endDate);
     const remainingTime = end.getTime() - now.getTime();
@@ -20,7 +20,7 @@ const SingleProjectMini = ({ project }: { project: ProjectDonate }) => {
     : project.description;
 
   // Calculate donation progress
-  const progressPercentage = (project.current_amount / project.goal_amount) * 100;
+  const progressPercentage = ((project.currentAmount / project.goalAmount) * 100 > 100) ? 100 : (project.currentAmount / project.goalAmount) * 100;
 
   return (
     <div className="border rounded-lg shadow-md p-4 bg-white dark:bg-gray-800">
@@ -28,18 +28,23 @@ const SingleProjectMini = ({ project }: { project: ProjectDonate }) => {
         <div>
           <Image
             src="/images/projects/image_project.png"
-            alt={project.project_name}
+            alt={project.projectName}
             width={300}
             height={200}
             className="w-full h-48 object-cover rounded-md"
           />
           <div className="inline-block bg-orange-200 text-white rounded-full px-2 py-1 mt-2">
-            <p className="text-orange-600">{timeRemaining(project.end_date)}</p>
+            <p className="text-orange-600">{timeRemaining(project.endDate)}</p>
           </div>
-          <p className="text-gray-700 dark:text-gray-300">{}</p><div className="w-full flex justify-end">
-            <h2 className="text-lg text-gray-900 dark:text-white mt-2">{project.project_manager_name}</h2>
+          <p className="text-gray-700 dark:text-gray-300"></p>
+          <div className="w-full flex justify-end">
+            <h2 className="text-lg text-gray-900 dark:text-white mt-2">
+              {project.projectManager.fullName} {/* Accessing project manager's full name */}
+            </h2>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-2">{project.project_name}</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-2">
+            {project.projectName}
+          </h3>
           <p className="text-gray-700 dark:text-gray-300">{limitedDescription}</p>
         </div>
         {/* --- */}
@@ -55,10 +60,14 @@ const SingleProjectMini = ({ project }: { project: ProjectDonate }) => {
               />
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Hiện tại: <span className="font-bold">{project.current_amount.toLocaleString('vi-VI')}đ</span> / <span className="font-bold">{project.goal_amount.toLocaleString('vi-VI')}đ</span>
+              Hiện tại: <span className="font-bold">{project.currentAmount.toLocaleString('vi-VI')}đ</span> / <span className="font-bold">{project.goalAmount.toLocaleString('vi-VI')}đ</span>
             </p>
           </div>
-          <button className="mt-4 w-full py-2 bg-blue2 text-white rounded hover:bg-blue2">
+          <button className="mt-4 w-full py-2 bg-green-500 text-white rounded hover:bg-green-700">
+            Xem thông tin
+          </button>
+
+          <button className="mt-4 w-full py-2 bg-blue2 text-white rounded hover:bg-darkblue">
             Quyên góp
           </button>
         </div>

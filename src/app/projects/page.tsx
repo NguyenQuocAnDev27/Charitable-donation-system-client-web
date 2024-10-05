@@ -1,21 +1,28 @@
 'use client';
 
 import { Suspense, useEffect, useState } from "react";
-import projects_data from "./projectsData";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import SingleProjectMini from "@/components/Projects/SingleProjectMini";
 import ScrollUp from "@/components/Common/ScrollUp";
 import SearchBar from "@/components/Projects/SearchBar";
+import { useFetchProjects } from "@/store/hooks"; // Import the hook
 
 const Projects = () => {
   const [currentPage, setCurrentPage] = useState(1); // Tracks the current page
   const projectsPerPage = 20; // Number of projects per page
   const [searchQuery, setSearchQuery] = useState(""); // For search
 
-  // Filtered projects based on search query
-  const filteredProjects = projects_data.filter((project) => 
-    project.project_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Fetch projects from the hook
+  const { data: projectsData, loading, error, fetchProjects } = useFetchProjects(); // Use hook to fetch projects
+
+  useEffect(() => {
+    fetchProjects(); // Fetch projects when the component mounts
+  }, [fetchProjects]);
+
+  // Filter projects based on search query
+  const filteredProjects = projectsData?.filter((project) => 
+    project.projectName.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   // Calculate total number of pages
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
@@ -39,6 +46,16 @@ const Projects = () => {
     scrollToTop(); // Scroll up when changing pages
   };
 
+  // Render loading state
+  if (loading) {
+    return <p>Loading projects...</p>;
+  }
+
+  // Render error state
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
   return (
     <>
       <ScrollUp/>
@@ -47,18 +64,25 @@ const Projects = () => {
       <section className="pb-[20px] pt-[20px]">
         <div className="container">
           <Suspense fallback={<p>Đang tải thanh tìm kiếm...</p>}>
-            <SearchBar placeholder="Tìm kiếm bằng Tên chiến dịch" />
+            <SearchBar 
+              placeholder="Tìm kiếm bằng Tên chiến dịch"
+              onSearch={(query) => setSearchQuery(query)} // Update search query
+            />
           </Suspense>
         </div>
       </section>
 
       <section className="pb-[120px] pt-[60px]">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {currentProjects.map((project) => (
-              <SingleProjectMini key={project.project_id} project={project} />
-            ))}
-          </div>
+          {currentProjects.length === 0 ? (
+            <p>No projects found</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {currentProjects.map((project) => (
+                <SingleProjectMini key={project.projectId} project={project} />
+              ))}
+            </div>
+          )}
 
           {/* Pagination Controls */}
           <div className="mt-8 flex justify-center space-x-2">
@@ -90,6 +114,6 @@ const Projects = () => {
       </section>
     </>
   );
-}
+};
 
 export default Projects;

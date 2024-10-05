@@ -7,6 +7,7 @@ import { getCookie } from "@/utils/cookiesHandler"; // Import the getCookie func
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 import LanguegeToggler from "./LanguageToggler";
+import { COOKIE_KEYS } from "@/constant/cookieKey";
 
 const Header = () => {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -22,9 +23,11 @@ const Header = () => {
 
   // Handle sticky navbar and user data from cookies
   const checkUserAuth = () => {
-    const storedUserName = getCookie("user_name");
-    const storedUserId = getCookie("user_id");
+    const storedUserName = getCookie(COOKIE_KEYS.USER_NAME);
+    const storedUserId = getCookie(COOKIE_KEYS.USER_ID);
 
+    console.log(`TEST - storedUserName: ${storedUserName}`)
+    console.log(`TEST - storedUserId: ${storedUserId}`)
     if (storedUserName) setUserName(storedUserName); // Set user name
     else setUserName(null); // Clear if not signed in
 

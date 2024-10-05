@@ -1,47 +1,87 @@
-'use client'; // Required for client-side logic
+'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { setCookie } from "@/utils/cookiesHandler";
+import { getCookie, setCookie } from "@/utils/cookiesHandler";
 import { DataUser } from "./DataUser";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
-import { User } from "@/types/user";
+import { UseAuthResponse } from "@/interface";
 import Loading from "@/components/Loading/Loading";
+import useAuthenticate from "@/store/hooks/useAuthenticate";
+import { User } from "@/interface";
+import { useGetInfoDetail } from "@/store/hooks/useGetInfoDetail";
 
 const SigninPage = () => {
   const [email, setEmail] = useState(""); // State for email
   const [password, setPassword] = useState(""); // State for password
   const [errorMessage, setErrorMessage] = useState(""); // State for error messages
-  const [loading, setLoading] = useState(false); // State for loading state
+  const [loadingLoginAPI, setLoadingLoginAPI] = useState(false); // State for loading UI state
+  const [isLoginDone, setIsLoiginDone] = useState(false);
   const [rememberMe, setRememberMe] = useState(false); // State for "Remember Me" checkbox
   const router = useRouter();
+  const { accessToken, refreshToken, loading: loadingAuth, success: successAuth, error: errorAuth, login: fetchAuth } = useAuthenticate();
+  const { data, loading: loadingGetInfo, error: errorGetInfo, success: successGetInfo, fetchInfo } = useGetInfoDetail();
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMessage("");
+  useEffect(()=> {
+    const access_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+    const user_name = getCookie(COOKIE_KEYS.USER_NAME)
+    
+    if(
+      access_token !== null && access_token !== undefined 
+      && user_name !== null && user_name !== undefined
+      && user_name !== "" && access_token !== ""
+    ) {
+      router.push('/');
+    }
+  }, []);
 
+  useEffect(()=> {
+    if(successAuth) {
+      console.log("Saving access token ...")
+      setCookie(COOKIE_KEYS.ACCESS_TOKEN, accessToken, 1);
+
+      if (rememberMe) {
+        console.log("Saving refresh token ...")
+        setCookie(COOKIE_KEYS.REFRESH_TOKEN, refreshToken, 7 * 24);
+      }
+
+      fetchInfo(email);
+    } else if(errorAuth) {
+      window.alert(errorAuth);
+    }
+  }, [successAuth, errorAuth, rememberMe]);
+
+  useEffect(() => {
+    if(successGetInfo) {
+        const expTime = rememberMe ? 7824 : 1
+
+        console.log("Saving user data ...")
+        setCookie(COOKIE_KEYS.USER_EMAIL, data.email, expTime);
+        setCookie(COOKIE_KEYS.USER_ID, `${data.userId}`, expTime);
+        setCookie(COOKIE_KEYS.USER_NAME, data.fullName, expTime);
+        setCookie(COOKIE_KEYS.USER_ROLE, data.email, expTime);
+
+        setIsLoiginDone(true);
+    } else if (errorGetInfo) {
+      setErrorMessage(errorGetInfo);
+    }
+  }, [data, successGetInfo, errorGetInfo]);
+
+  useEffect(()=> {
+    if(isLoginDone) {
+      router.push('/');
+    }
+  }, [isLoginDone]);
+
+  const handleSignIn = (e: React.FormEvent) => {
     try {
-      // Simulate a fake fetch request that returns a User object with a jwt_token
-      const user: User = await fakeFetchData(email, password);
-
-      // Determine cookie expiration based on "Remember Me" checkbox
-      const expirationDays = rememberMe ? 30 : 1; // 30 days if "Remember Me" is checked, otherwise 1 day
-
-      // Set cookies using the constants from cookieKey.tsx
-      setCookie(COOKIE_KEYS.JWT_TOKEN, user.jwt_token, expirationDays);
-      setCookie(COOKIE_KEYS.USER_ID, user.user_id, expirationDays);
-      setCookie(COOKIE_KEYS.USER_EMAIL, user.email, expirationDays);
-      setCookie(COOKIE_KEYS.USER_NAME, user.full_name, expirationDays);
-      setCookie(COOKIE_KEYS.USER_ROLE, user.role, expirationDays);
-
-      // Redirect to the homepage after successful login
-      router.push("/");
+      // Call the signin function from useAuth hook
+      e.preventDefault();
+      fetchAuth(email, password);
+      console.log(`TEST call api auth state: ${successAuth}`)
     } catch (error) {
-      setErrorMessage(error as string);
-    } finally {
-      setLoading(false);
+      setErrorMessage('Login failed. Please check your credentials.'); // Show error message
     }
   };
 
@@ -153,9 +193,9 @@ const SigninPage = () => {
                     <button
                       type="submit"
                       className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90"
-                      disabled={loading}
+                      disabled={loadingLoginAPI}
                     >
-                      {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+                      {loadingLoginAPI ? "Đang đăng nhập..." : "Đăng nhập"}
                     </button>
                   </div>
                 </form>
@@ -233,16 +273,3 @@ const SigninPage = () => {
 };
 
 export default SigninPage;
-
-const fakeFetchData = (email: string, password: string): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Simulate login with DataUser for successful login
-      if (email === DataUser.email && password === "password123") {
-        resolve(DataUser); // This will match the User class structure
-      } else {
-        reject("Invalid credentials");
-      }
-    }, 1000);
-  });
-};

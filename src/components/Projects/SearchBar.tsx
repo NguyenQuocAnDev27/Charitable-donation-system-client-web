@@ -4,12 +4,12 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 
-export default function SearchBar({ placeholder }: { placeholder: string }) {
+export default function SearchBar({ placeholder, onSearch }: { placeholder: string, onSearch: (term: string) => void }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  // Debounced function to update the search term in the URL
+  // Debounced function to update the search term in the URL and call the parent search handler
   const handleSearch = useDebouncedCallback((term) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', '1'); // Reset to first page when searching
@@ -22,6 +22,9 @@ export default function SearchBar({ placeholder }: { placeholder: string }) {
 
     // Update the URL without reloading the page
     replace(`${pathname}?${params.toString()}`);
+
+    // Call the onSearch prop passed from the parent to filter the projects
+    onSearch(term);
   }, 300);
 
   return (
