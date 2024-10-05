@@ -4,12 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getCookie, setCookie } from "@/utils/cookiesHandler";
-import { DataUser } from "./DataUser";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
-import { UseAuthResponse } from "@/interface";
-import Loading from "@/components/Loading/Loading";
 import useAuthenticate from "@/store/hooks/useAuthenticate";
-import { User } from "@/interface";
 import { useGetInfoDetail } from "@/store/hooks/useGetInfoDetail";
 
 const SigninPage = () => {
