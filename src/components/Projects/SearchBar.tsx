@@ -23,7 +23,7 @@ export default function SearchBar({ placeholder, onSearch }: { placeholder: stri
 
     // Call the onSearch prop passed from the parent to filter the projects
     onSearch(term);
-  }, 300);
+  }, 700);
 
   return (
     <div className="relative flex flex-1 flex-shrink-0">

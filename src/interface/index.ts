@@ -8,3 +8,5 @@ export * from './User';
 export * from './Project';
 export * from './ProjectManager';
 export * from './ResponseState';
+export * from './ProjectPageResponse';
+
