@@ -16,8 +16,20 @@ const SigninPage = () => {
   const [isLoginDone, setIsLoiginDone] = useState(false);
   const [rememberMe, setRememberMe] = useState(false); // State for "Remember Me" checkbox
   const router = useRouter();
-  const { accessToken, refreshToken, loading: loadingAuth, success: successAuth, error: errorAuth, login: fetchAuth } = useAuthenticate();
-  const { data, loading: loadingGetInfo, error: errorGetInfo, success: successGetInfo, fetchInfo } = useGetInfoDetail();
+  const { 
+    data: dataAuth, 
+    loading: loadingAuth, 
+    success: successAuth, 
+    error: errorAuth, 
+    login: fetchAuth 
+  } = useAuthenticate();
+  const { 
+    data: dataUserDetai, 
+    loading: loadingGetInfo, 
+    error: errorGetInfo, 
+    success: successGetInfo, 
+    fetchInfo 
+  } = useGetInfoDetail();
 
   useEffect(()=> {
     const access_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
@@ -35,11 +47,11 @@ const SigninPage = () => {
   useEffect(()=> {
     if(successAuth) {
       console.log("Saving access token ...")
-      setCookie(COOKIE_KEYS.ACCESS_TOKEN, accessToken, 1);
+      setCookie(COOKIE_KEYS.ACCESS_TOKEN, dataAuth.accessToken, 1);
 
       if (rememberMe) {
         console.log("Saving refresh token ...")
-        setCookie(COOKIE_KEYS.REFRESH_TOKEN, refreshToken, 7 * 24);
+        setCookie(COOKIE_KEYS.REFRESH_TOKEN, dataAuth.refreshToken, 7 * 24);
       }
 
       fetchInfo(email);
@@ -53,16 +65,16 @@ const SigninPage = () => {
         const expTime = rememberMe ? 7824 : 1
 
         console.log("Saving user data ...")
-        setCookie(COOKIE_KEYS.USER_EMAIL, data.email, expTime);
-        setCookie(COOKIE_KEYS.USER_ID, `${data.userId}`, expTime);
-        setCookie(COOKIE_KEYS.USER_NAME, data.fullName, expTime);
-        setCookie(COOKIE_KEYS.USER_ROLE, data.email, expTime);
+        setCookie(COOKIE_KEYS.USER_EMAIL, dataUserDetai.email, expTime);
+        setCookie(COOKIE_KEYS.USER_ID, `${dataUserDetai.userId}`, expTime);
+        setCookie(COOKIE_KEYS.USER_NAME, dataUserDetai.fullName, expTime);
+        setCookie(COOKIE_KEYS.USER_ROLE, dataUserDetai.email, expTime);
 
         setIsLoiginDone(true);
     } else if (errorGetInfo) {
       setErrorMessage(errorGetInfo);
     }
-  }, [data, successGetInfo, errorGetInfo]);
+  }, [successGetInfo, errorGetInfo]);
 
   useEffect(()=> {
     if(isLoginDone) {
