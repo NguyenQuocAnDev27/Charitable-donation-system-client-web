@@ -1,60 +1,84 @@
 import axios from 'axios';
 import { useCallback } from 'react';
+import createAPIState from './createAPIState';
+import { User, APIState } from '@/interface';
 import { getCookie } from '@/utils/cookiesHandler';
-import { create } from 'zustand';
-import { COOKIE_KEYS } from "../../constant/cookieKey";
-import { User } from '@/interface';
-
-interface InfoState {
-  data: User;
-  loading: boolean;
-  error: string | null;
-  success: boolean | null;
-  getInfoDetail: (email: string) => Promise<void>;
-}
+import { useTokenStore } from './useRefreshToken';
+import { COOKIE_KEYS } from '@/constant/cookieKey';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SERVER_API_URL;
 
-const useInfoStore = create<InfoState>((set) => ({
-  data: null,
-  loading: false,
-  error: null,
-  success: null,
-  getInfoDetail: async (email: string) => {
-    console.log(`Get InfoDetail from email ${email}`)
-    set({ loading: true, error: null, success: null });
+// Create a Zustand store for the Info API
+const useInfoAPIState = createAPIState<User>();
 
-    // Get the token from cookies
-    const token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+const useGetInfoDetail = () => {
+  const { data, loading, error, success, setData, setLoading, setError, setSuccess } = useInfoAPIState();
+  const { refreshAccessToken } = useTokenStore();
 
-    if (!token) {
-      set({ error: 'No token found', loading: false, success: false });
-      return;
-    }
+  const fetchInfoDetail = useCallback(
+    async (email: string) => {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
 
-    try {
-      const JSONresponse = await axios.get(`${BASE_URL}/api/getInfoDetail`, {
-        params: { email },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      let token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
 
-      const response = JSONresponse.data;
-      // console.log(`Data fetch: ${JSON.stringify(response.data)}`);
-      set({ data: response.data, loading: false, success: true });
-    } catch (err) {
-      set({ error: err.response?.data?.message || err.message, loading: false, success: false });
-    }
-  },
-}));
+      const fetchData = async () => {
+        try {
+          const JSONresponse = await axios.get<APIState<User>>(
+            `${BASE_URL}/api/getInfoDetail`,
+            {
+              params: { email },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-export const useGetInfoDetail = () => {
-  const { data, loading, error, success, getInfoDetail } = useInfoStore();
+          const response = JSONresponse.data.data;
 
-  const fetchInfo = useCallback((email: string) => {
-    getInfoDetail(email);
-  }, [getInfoDetail]);
+          setData(response);
+          setSuccess(true);
+        } catch (error) {
+          let errorMessage = 'An unexpected error occurred.';
 
-  return { data, loading, error, success, fetchInfo };
+          if (axios.isAxiosError(error) && error.response) {
+            const status = error.response.status;
+            console.log(`Status: ${status}`);
+
+            if (status === 600) {
+              errorMessage = 'Expired Access Token. Refreshing...';
+              await refreshAccessToken();
+              token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+
+              if (token) {
+                await fetchData(); // Retry with new token
+                return;
+              } else {
+                errorMessage = 'Failed to refresh token.';
+              }
+            } else if (status === 601) {
+              errorMessage = 'Custom message for status 601';
+            } else if (status === 602) {
+              errorMessage = 'Custom message for status 602';
+            } else {
+              errorMessage = error.response.data?.message || errorMessage;
+            }
+          }
+
+          setError(errorMessage);
+          setSuccess(false);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      await fetchData();
+    },
+    [refreshAccessToken, setData, setLoading, setError, setSuccess]
+  );
+
+  return { data, loading, error, success, fetchInfoDetail };
 };
+
+export default useGetInfoDetail;

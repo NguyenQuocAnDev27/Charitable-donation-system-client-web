@@ -1,25 +1,21 @@
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import createAPIState from './createAPIState';
 import { getCookie } from '@/utils/cookiesHandler';
 import { COOKIE_KEYS } from '@/constant/cookieKey';
-import { ProjectPageResponse, APIState } from '@/interface';
+import { ProjectDetailResponse, APIState } from '@/interface';
 import { useTokenStore } from './useRefreshToken';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SERVER_API_URL;
 
-// Create a Zustand store for paginated Project API responses
-const useProjectAPIState = createAPIState<ProjectPageResponse>();
+// Create a Zustand store specifically for Project Detail
+const useProjectDetailAPIState = createAPIState<ProjectDetailResponse>();
 
-const useFetchProjectsByPage = () => {
-  const { data, loading, error, success, setData, setLoading, setError, setSuccess } = useProjectAPIState();
+const useFetchProjectDetail = (projectId: number) => {
+  const { data, loading, error, success, setData, setLoading, setError, setSuccess } = useProjectDetailAPIState();
   const { refreshAccessToken } = useTokenStore();
 
-  // State for pagination and query string
-  const [numberPage, setNumberPage] = useState(0);
-  const [queryString, setQueryString] = useState('');
-
-  const fetchProjectsPage = useCallback(async () => {
+  const fetchProjectDetail = useCallback(async () => {
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -27,16 +23,22 @@ const useFetchProjectsByPage = () => {
     let token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
 
     const fetchData = async () => {
+      if(token === null || token === undefined) {
+        setError("Access token not found");
+        setSuccess(false);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const JSONresponse = await axios.get<APIState<ProjectPageResponse>>(
-          `${BASE_URL}/api/projects/page`,
+        const JSONresponse = await axios.get<APIState<ProjectDetailResponse>>(
+          `${BASE_URL}/api/project_detail/show`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
             params: {
-              number: numberPage,
-              query: queryString,
+              projectId,
             },
           }
         );
@@ -74,23 +76,9 @@ const useFetchProjectsByPage = () => {
     };
 
     await fetchData();
-  }, [numberPage, queryString, refreshAccessToken, setData, setLoading, setError, setSuccess]);
+  }, [projectId, refreshAccessToken, setData, setLoading, setError, setSuccess]);
 
-  // Fetch data whenever numberPage or queryString changes
-  useEffect(() => {
-    fetchProjectsPage();
-  }, [numberPage, queryString, fetchProjectsPage]);
-
-  // Only update the page number or query string
-  const changePageNumber = (page: number) => {
-    setNumberPage(page);
-  };
-
-  const updateQueryString = (query: string) => {
-    setQueryString(query);
-  };
-
-  return { data, loading, error, success, fetchProjectsPage, changePageNumber, updateQueryString };
+  return { data, loading, error, success, fetchProjectDetail };
 };
 
-export default useFetchProjectsByPage;
+export default useFetchProjectDetail;

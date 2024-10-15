@@ -5,9 +5,9 @@ import Breadcrumb from "@/components/Common/Breadcrumb";
 import SingleProjectMini from "@/components/Projects/SingleProjectMini";
 import ScrollUp from "@/components/Common/ScrollUp";
 import SearchBar from "@/components/Projects/SearchBar";
-import { useFetchProjectsByPage } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
+import useFetchProjectsByPage from "@/store/hooks/useProjectsByPage";
 
 const Projects = () => {
   const [currentPage, setCurrentPage] = useState(0); // Zero-based current page
@@ -19,7 +19,7 @@ const Projects = () => {
   const loadingDelay = 1000;
 
   // Fetch projects from the hook, pass page number and query
-  const { data: projectsData, loading, error, fetchProjectsByPage, changePageNumber, updateQueryString } = useFetchProjectsByPage();
+  const { data: projectsData, loading, error, changePageNumber, updateQueryString } = useFetchProjectsByPage();
 
   // Effect to fetch projects when the page changes
   useEffect(() => {
@@ -104,9 +104,14 @@ const Projects = () => {
       <section className="pb-[120px] pt-[60px]">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {!error && projectsData?.list.map((project) => (
-              <SingleProjectMini key={project.projectId} project={project} />
-            ))}
+            {!error && projectsData?.list.map((project) => {
+              const handleClickInfo = () => {
+                router.push(`/projects/${project.projectId}/project`);
+              }
+              return (
+                <SingleProjectMini key={project.projectId} project={project} onClickInfo={handleClickInfo}/>
+              )
+            })}
 
             {(!projectsData || projectsData.list.length === 0) &&
               <p>Không có chiến dịch nào như vậy!</p>}

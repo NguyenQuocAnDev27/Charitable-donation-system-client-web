@@ -52,7 +52,8 @@ const useAuthStore = create<AuthState>((set) => ({
       };
 
       // Make a POST request to authenticate the user
-      const response = await axios.post(`${BASE_URL}/api/authenticate`, body, CONF);
+      const JSONresponse = await axios.post(`${BASE_URL}/api/authenticate`, body, CONF);
+      const response = JSONresponse.data
       const { status, data } = response;
 
       // If authentication is successful, update state with accessToken and refreshToken

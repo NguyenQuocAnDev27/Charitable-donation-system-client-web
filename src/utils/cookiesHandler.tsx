@@ -2,7 +2,7 @@
 'use-client';
 
 // Set
-export const setCookie = (name: string, value: string, hours: number) => {
+export const setCookie = (name: string, value: string, hours: number = 24 * 7) => {
   let expires = "";
   if (hours) {
     const date = new Date();

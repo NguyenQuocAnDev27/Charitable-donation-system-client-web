@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getCookie, setCookie } from "@/utils/cookiesHandler";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
 import useAuthenticate from "@/store/hooks/useAuthenticate";
-import { useGetInfoDetail } from "@/store/hooks/useGetInfoDetail";
+import useGetInfoDetail from "@/store/hooks/useGetInfoDetail";
 
 const SigninPage = () => {
   const [email, setEmail] = useState(""); // State for email
@@ -28,7 +28,7 @@ const SigninPage = () => {
     loading: loadingGetInfo, 
     error: errorGetInfo, 
     success: successGetInfo, 
-    fetchInfo 
+    fetchInfoDetail: fetchInfo 
   } = useGetInfoDetail();
 
   useEffect(()=> {
@@ -39,6 +39,7 @@ const SigninPage = () => {
       access_token !== null && access_token !== undefined 
       && user_name !== null && user_name !== undefined
       && user_name !== "" && access_token !== ""
+      && user_name !== "undefined" && access_token !== "undefined"
     ) {
       router.push('/');
     }
@@ -58,7 +59,7 @@ const SigninPage = () => {
     } else if(errorAuth) {
       window.alert(errorAuth);
     }
-  }, [successAuth, errorAuth, rememberMe]);
+  }, [loadingAuth, successAuth, errorAuth, rememberMe]);
 
   useEffect(() => {
     if(successGetInfo) {
@@ -74,7 +75,7 @@ const SigninPage = () => {
     } else if (errorGetInfo) {
       setErrorMessage(errorGetInfo);
     }
-  }, [successGetInfo, errorGetInfo]);
+  }, [loadingGetInfo, successGetInfo, errorGetInfo]);
 
   useEffect(()=> {
     if(isLoginDone) {

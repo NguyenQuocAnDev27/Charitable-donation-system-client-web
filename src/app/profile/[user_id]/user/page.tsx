@@ -1,19 +1,25 @@
-'use client'; // Required for client-side rendering
+"use client"; // Required for client-side rendering
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation"; // Use useParams for dynamic routes in Next.js 13+
 import { getCookie } from "@/utils/cookiesHandler";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
-import { useGetInfoDetail } from "@/store/hooks/useGetInfoDetail";
 import { useRouter } from "next/navigation";
+import useGetInfoDetail from "@/store/hooks/useGetInfoDetail";
 
 const UserPage = () => {
   const { user_id } = useParams(); // Get the user_id from the dynamic route
   const router = useRouter();
   const access_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
   const email = getCookie(COOKIE_KEYS.USER_EMAIL);
-  const { data, loading: loadingGetInfo, error: errorGetInfo, success: successGetInfo, fetchInfo } = useGetInfoDetail();
+  const {
+    data,
+    loading: loadingGetInfo,
+    error: errorGetInfo,
+    success: successGetInfo,
+    fetchInfoDetail: fetchInfo,
+  } = useGetInfoDetail();
 
   const [userData, setUserData] = useState({
     full_name: "",
@@ -22,7 +28,7 @@ const UserPage = () => {
   });
 
   useEffect(() => {
-    if(access_token) {
+    if (access_token) {
       fetchInfo(email);
     }
   }, []);
@@ -35,7 +41,7 @@ const UserPage = () => {
         phone_number: data?.phoneNumber || "No phone number found",
       });
     } else {
-      router.push('/signin');
+      router.push("/signin");
     }
   }, [successGetInfo]);
 
@@ -45,23 +51,26 @@ const UserPage = () => {
 
   return (
     <>
-    <Breadcrumb pageName="Tài khoản của tôi" description="" />
+      <Breadcrumb pageName="Tài khoản của tôi" description="" />
 
-    <section className="pb-[120px] pt-[20px] bg-gray-100 dark:bg-gray-900">
-      <div className="container mx-auto">
-        <div className="mt-5">
-          <p>
-            <strong>Full Name: </strong> {userData.full_name}
-          </p> <br/>
-          <p>
-            <strong>Email: </strong> {userData.email}
-          </p> <br/>
-          <p>
-            <strong>Phone Number: </strong> {userData.phone_number}
-          </p> <br/>
+      <section className="bg-gray-100 pb-[120px] pt-[20px] dark:bg-gray-900">
+        <div className="container mx-auto">
+          <div className="mt-5">
+            <p>
+              <strong>Full Name: </strong> {userData.full_name}
+            </p>{" "}
+            <br />
+            <p>
+              <strong>Email: </strong> {userData.email}
+            </p>{" "}
+            <br />
+            <p>
+              <strong>Phone Number: </strong> {userData.phone_number}
+            </p>{" "}
+            <br />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
     </>
   );
 };
