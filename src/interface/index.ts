@@ -48,14 +48,9 @@ export interface Transaction {
 export interface Pageable {
   pageNumber: number;
   pageSize: number;
-  sort: {
-    empty: boolean;
-    sorted: boolean;
-    unsorted: boolean;
-  };
-  offset: number;
-  paged: boolean;
-  unpaged: boolean;
+  totalPages: number;
+  totalElements: number;
+  numberOfElements: number;
 }
 
 export interface TransactionSearchResponse {
@@ -66,12 +61,6 @@ export interface TransactionSearchResponse {
   totalElements: number;
   size: number;
   number: number;
-  sort: {
-    empty: boolean;
-    sorted: boolean;
-    unsorted: boolean;
-  };
   first: boolean;
   numberOfElements: number;
-  empty: boolean;
 }

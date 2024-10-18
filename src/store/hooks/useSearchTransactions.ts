@@ -14,7 +14,7 @@ const useSearchTransactions = () => {
   const { refreshAccessToken } = useTokenStore();
 
   const searchTransactions = useCallback(
-    async (pageNumber: number = 0, pageSize: number = 10) => {
+    async (pageNumber: number = 0, pageSize: number = 10, transactionId?: number | null) => {
       setLoading(true);
       setError(null);
       setSuccess(null);
@@ -27,8 +27,9 @@ const useSearchTransactions = () => {
             `${process.env.NEXT_PUBLIC_SERVER_API_URL}/api/transaction/search`,
             {
               params: {
-                pageNumber,
-                pageSize,
+                page: pageNumber,      // API expects "page" for page number
+                size: pageSize,        // API expects "size" for page size
+                transactionId: transactionId || undefined,  // Include transactionId if provided
               },
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -36,7 +37,7 @@ const useSearchTransactions = () => {
             }
           );
 
-          setData(response.data.data);
+          setData(response.data.data);  // Set full API response (pagination + content)
           setSuccess(true);
         } catch (error) {
           let errorMessage = 'An unexpected error occurred.';
