@@ -5,9 +5,11 @@ import { Project } from "../../interface"; // Assuming this is your updated inte
 const SingleProjectMini = ({
   project,
   onClickInfo,
+  onClickDonate,
 }: {
   project: Project;
   onClickInfo: () => void;
+  onClickDonate: () => void;
 }) => {
   // Calculate time remaining
   const timeRemaining = (endDate: string) => {
@@ -90,7 +92,9 @@ const SingleProjectMini = ({
             Xem thông tin
           </button>
 
-          <button className="mt-4 w-full rounded bg-blue2 py-2 text-white hover:bg-darkblue">
+          <button className="mt-4 w-full rounded bg-blue2 py-2 text-white hover:bg-darkblue"
+            onClick={onClickDonate}
+          >
             Quyên góp
           </button>
         </div>

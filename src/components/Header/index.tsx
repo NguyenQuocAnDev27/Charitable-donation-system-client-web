@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // Use usePathname to detect route changes
@@ -8,13 +8,18 @@ import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 import LanguegeToggler from "./LanguageToggler";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
+import { User } from "@/interface";
+import { LOCAL_STORAGE_KEY } from "@/constant/localStorageKey";
+import StorageUtil from "@/utils/storageUtil";
+import { useTokenStore } from "@/store/hooks/useRefreshToken";
 
 const Header = () => {
   const [navbarOpen, setNavbarOpen] = useState(false);
   const [sticky, setSticky] = useState(false);
   const [openIndex, setOpenIndex] = useState(-1);
   const [userName, setUserName] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null); // State to store user_id
+  const [userId, setUserId] = useState<number | null>(null); // State to store user_id
+  const { refreshAccessToken } = useTokenStore();
 
   const pathname = usePathname(); // Get the current pathname
 
@@ -23,16 +28,28 @@ const Header = () => {
 
   // Handle sticky navbar and user data from cookies
   const checkUserAuth = () => {
-    const storedUserName = getCookie(COOKIE_KEYS.USER_NAME);
-    const storedUserId = getCookie(COOKIE_KEYS.USER_ID);
+    const storedUserName = StorageUtil.get<User>(LOCAL_STORAGE_KEY.USER)?.fullName;
+    const storedUserId = StorageUtil.get<User>(LOCAL_STORAGE_KEY.USER)?.userId;
+    const a_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+    const r_token = getCookie(COOKIE_KEYS.REFRESH_TOKEN);
 
-    console.log(`TEST - storedUserName: ${storedUserName}`)
-    console.log(`TEST - storedUserId: ${storedUserId}`)
-    if (storedUserName) setUserName(storedUserName); // Set user name
-    else setUserName(null); // Clear if not signed in
+    // console.log(`TEST - storedUserName: ${storedUserName}`);
+    // console.log(`TEST - storedUserId: ${storedUserId}`);
+    // console.log(`TEST - a_token: ${a_token}`);
+    if (a_token) {
+      setUserName(storedUserName); // Set user name
+      setUserId(storedUserId);
+    }
+    else {
+      if(r_token) {
+        refreshAccessToken()
+      } else {
+        setUserName(null);
+        setUserId(null);
+      }
+    }
 
-    if (storedUserId) setUserId(storedUserId); // Set user ID
-    else setUserId(null); // Clear if not signed in
+
   };
 
   useEffect(() => {
@@ -64,7 +81,7 @@ const Header = () => {
       <header
         className={`header left-0 top-0 z-40 flex w-full items-center ${
           sticky
-            ? "dark:bg-gray-dark dark:shadow-sticky-dark fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition"
+            ? "fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition dark:bg-gray-dark dark:shadow-sticky-dark"
             : "absolute bg-transparent"
         }`}
       >
@@ -103,17 +120,17 @@ const Header = () => {
                 >
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
-                      navbarOpen ? " top-[7px] rotate-45" : " "
+                      navbarOpen ? "top-[7px] rotate-45" : " "
                     }`}
                   />
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
-                      navbarOpen ? "opacity-0 " : " "
+                      navbarOpen ? "opacity-0" : " "
                     }`}
                   />
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
-                      navbarOpen ? " top-[-8px] -rotate-45" : " "
+                      navbarOpen ? "top-[-8px] -rotate-45" : " "
                     }`}
                   />
                 </button>
@@ -126,6 +143,19 @@ const Header = () => {
                   }`}
                 >
                   <ul className="block lg:flex lg:space-x-12">
+                    {userName && userId && (
+                      <>
+                        <li key={999}>
+                          <Link
+                            href={`/profile/${userId}/user`}
+                            className="md:hidden block rounded py-2.5 text-sm font-bold text-dark hover:text-darkblue dark:text-white dark:hover:text-blue3 lg:px-3"
+                          >
+                            Chào mừng, {userName}
+                          </Link>
+                        </li>
+                      </>
+                    )}
+
                     {menuData.map((menuItem, index) => (
                       <li key={index} className="group relative">
                         {menuItem.path ? (
@@ -176,6 +206,19 @@ const Header = () => {
                         )}
                       </li>
                     ))}
+
+                    {userName && userId && (
+                      <>
+                        <li key={998}>
+                          <Link
+                            href={`/signout`}
+                            className="md:hidden block rounded py-2.5 text-sm font-bold text-red-500 hover:text-red-800 lg:px-3"
+                          >
+                            Đăng xuất
+                          </Link>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </nav>
               </div>
@@ -186,13 +229,13 @@ const Header = () => {
                   <>
                     <Link
                       href={`/profile/${userId}/user`}
-                      className="block rounded py-2.5 font-bold text-sm text-dark hover:text-darkblue dark:text-white dark:hover:text-blue lg:px-3"
+                      className="hidden rounded py-2.5 text-sm font-bold text-dark hover:text-darkblue dark:text-white dark:hover:text-blue md:block lg:px-3"
                     >
                       Chào mừng, {userName}
                     </Link>
                     <Link
                       href={`/signout`}
-                      className="block rounded py-2.5 text-sm font-bold text-red-500 hover:text-red-800 lg:px-3"
+                      className="hidden rounded py-2.5 text-sm font-bold text-red-500 hover:text-red-800 md:block lg:px-3"
                     >
                       <Image
                         src="/icons/logout.png"
@@ -212,7 +255,7 @@ const Header = () => {
                     </Link>
                     <Link
                       href="/signup"
-                      className="ease-in-up shadow-btn hover:shadow-btn-hover hidden rounded-sm bg-primary px-8 py-3 text-base font-medium text-white transition duration-300 hover:bg-opacity-90 md:block md:px-9 lg:px-6 xl:px-9"
+                      className="ease-in-up hidden rounded-sm bg-primary px-8 py-3 text-base font-medium text-white shadow-btn transition duration-300 hover:bg-opacity-90 hover:shadow-btn-hover md:block md:px-9 lg:px-6 xl:px-9"
                     >
                       Đăng ký
                     </Link>

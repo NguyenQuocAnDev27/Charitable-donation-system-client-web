@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,6 +7,9 @@ import { getCookie, setCookie } from "@/utils/cookiesHandler";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
 import useAuthenticate from "@/store/hooks/useAuthenticate";
 import useGetInfoDetail from "@/store/hooks/useGetInfoDetail";
+import StorageUtil from "@/utils/storageUtil";
+import { User } from "@/interface";
+import { LOCAL_STORAGE_KEY } from "@/constant/localStorageKey";
 
 const SigninPage = () => {
   const [email, setEmail] = useState(""); // State for email
@@ -16,70 +19,69 @@ const SigninPage = () => {
   const [isLoginDone, setIsLoiginDone] = useState(false);
   const [rememberMe, setRememberMe] = useState(false); // State for "Remember Me" checkbox
   const router = useRouter();
-  const { 
-    data: dataAuth, 
-    loading: loadingAuth, 
-    success: successAuth, 
-    error: errorAuth, 
-    login: fetchAuth 
+  const {
+    data: dataAuth,
+    loading: loadingAuth,
+    success: successAuth,
+    error: errorAuth,
+    login: fetchAuth,
   } = useAuthenticate();
-  const { 
-    data: dataUserDetai, 
-    loading: loadingGetInfo, 
-    error: errorGetInfo, 
-    success: successGetInfo, 
-    fetchInfoDetail: fetchInfo 
+  const {
+    data: dataUserDetai,
+    loading: loadingGetInfo,
+    error: errorGetInfo,
+    success: successGetInfo,
+    fetchInfoDetail: fetchInfo,
   } = useGetInfoDetail();
 
-  useEffect(()=> {
+  useEffect(() => {
     const access_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
-    const user_name = getCookie(COOKIE_KEYS.USER_NAME)
-    
-    if(
-      access_token !== null && access_token !== undefined 
-      && user_name !== null && user_name !== undefined
-      && user_name !== "" && access_token !== ""
-      && user_name !== "undefined" && access_token !== "undefined"
+
+    if (
+      access_token !== null &&
+      access_token !== undefined &&
+      access_token !== "" &&
+      access_token !== "undefined"
     ) {
-      router.push('/');
+      router.push("/");
     }
   }, []);
 
-  useEffect(()=> {
-    if(successAuth) {
-      console.log("Saving access token ...")
+  useEffect(() => {
+    if (successAuth) {
+      console.log("Saving access token ...");
       setCookie(COOKIE_KEYS.ACCESS_TOKEN, dataAuth.accessToken, 1);
 
       if (rememberMe) {
-        console.log("Saving refresh token ...")
+        console.log("Saving refresh token ...");
         setCookie(COOKIE_KEYS.REFRESH_TOKEN, dataAuth.refreshToken, 7 * 24);
       }
 
       fetchInfo(email);
-    } else if(errorAuth) {
+    } else if (errorAuth) {
       window.alert(errorAuth);
     }
   }, [loadingAuth, successAuth, errorAuth, rememberMe]);
 
   useEffect(() => {
-    if(successGetInfo) {
-        const expTime = rememberMe ? 7824 : 1
+    if (successGetInfo) {
+      const expTime = rememberMe ? 7824 : 1;
 
-        console.log("Saving user data ...")
-        setCookie(COOKIE_KEYS.USER_EMAIL, dataUserDetai.email, expTime);
-        setCookie(COOKIE_KEYS.USER_ID, `${dataUserDetai.userId}`, expTime);
-        setCookie(COOKIE_KEYS.USER_NAME, dataUserDetai.fullName, expTime);
-        setCookie(COOKIE_KEYS.USER_ROLE, dataUserDetai.email, expTime);
+      console.log("Saving user data into Cookie ...");
+      setCookie(COOKIE_KEYS.USER_EMAIL, dataUserDetai.email, expTime);
+      setCookie(COOKIE_KEYS.USER_ID, `${dataUserDetai.userId}`, expTime);
+      console.log("Saving user data into Storage...");
+      StorageUtil.save<User>(LOCAL_STORAGE_KEY.USER, dataUserDetai);
 
-        setIsLoiginDone(true);
+      setIsLoiginDone(true);
     } else if (errorGetInfo) {
       setErrorMessage(errorGetInfo);
     }
   }, [loadingGetInfo, successGetInfo, errorGetInfo]);
 
-  useEffect(()=> {
-    if(isLoginDone) {
-      router.push('/');
+  useEffect(() => {
+    if (isLoginDone) {
+      router.push("/");
     }
   }, [isLoginDone]);
 
@@ -88,9 +90,9 @@ const SigninPage = () => {
       // Call the signin function from useAuth hook
       e.preventDefault();
       fetchAuth(email, password);
-      console.log(`TEST call api auth state: ${successAuth}`)
+      console.log(`TEST call api auth state: ${successAuth}`);
     } catch (error) {
-      setErrorMessage('Login failed. Please check your credentials.'); // Show error message
+      setErrorMessage("Login failed. Please check your credentials."); // Show error message
     }
   };
 
@@ -100,7 +102,7 @@ const SigninPage = () => {
         <div className="container">
           <div className="-mx-4 flex flex-wrap">
             <div className="w-full px-4">
-              <div className="shadow-three mx-auto max-w-[500px] rounded bg-white px-6 py-10 dark:bg-dark sm:p-[60px]">
+              <div className="mx-auto max-w-[500px] rounded bg-white px-6 py-10 shadow-three dark:bg-dark sm:p-[60px]">
                 <h3 className="mb-3 text-center text-2xl font-bold text-black dark:text-white sm:text-3xl">
                   Đăng nhập
                 </h3>
@@ -127,7 +129,7 @@ const SigninPage = () => {
                       type="email"
                       name="email"
                       placeholder="example@gmail.com"
-                      className="border-stroke dark:text-body-color-dark dark:shadow-two w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:focus:border-primary dark:focus:shadow-none"
+                      className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -144,7 +146,7 @@ const SigninPage = () => {
                       type="password"
                       name="password"
                       placeholder="Nhập mật khẩu của bạn"
-                      className="border-stroke dark:text-body-color-dark dark:shadow-two w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:focus:border-primary dark:focus:shadow-none"
+                      className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -201,7 +203,7 @@ const SigninPage = () => {
                   <div className="mb-6">
                     <button
                       type="submit"
-                      className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90"
+                      className="flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white shadow-submit duration-300 hover:bg-primary/90 dark:shadow-submit-dark"
                       disabled={loadingLoginAPI}
                     >
                       {loadingLoginAPI ? "Đang đăng nhập..." : "Đăng nhập"}

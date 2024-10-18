@@ -51,7 +51,7 @@ const AboutPage = () => {
             - Cho các đối tác gây quỹ: 090 211 0550 <br />
             - Hoặc inbox tại fanpage facebook dưới đây <br /><br />
 
-            <strong>Facebook:</strong> <a href="https://www.facebook.com/SaigonUni.SGU" target="_blank" className="text-blue2 dark:text-blue hover:underline">Sai Gon University Charity</a> <br />
+            <strong>Facebook:</strong> <a href="https://www.facebook.com/SaigonUni.SGU" target="_blank" className="text-blue2 dark:text-blue3 hover:underline">Sai Gon University Charity</a> <br />
           </p>
         </div>
       </section>
