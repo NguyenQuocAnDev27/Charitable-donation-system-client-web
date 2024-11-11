@@ -15,6 +15,7 @@ import Loading from "@/components/Loading/Loading";
 import React from "react";
 import ScrollUp from "@/components/Common/ScrollUp";
 import Breadcrumb from "@/components/Common/Breadcrumb";
+import useContentBlog from "@/store/hooks/useContentBlog";
 
 interface ProjectDetailProps {
   params: {
@@ -24,14 +25,13 @@ interface ProjectDetailProps {
 
 const ProjectDetail = ({ params }: ProjectDetailProps) => {
   const projectId = parseInt(params.id, 10);
-  const { data, loading, error, fetchProjectDetail } =
-    useFetchProjectDetail(projectId);
+  const { data, loading, error, fetchContentBlog } = useContentBlog(projectId);
 
   useEffect(() => {
     if (!isNaN(projectId)) {
-      fetchProjectDetail(); // Fetch project details when the component mounts
+      fetchContentBlog(); // Fetch project details when the component mounts
     }
-  }, [projectId, fetchProjectDetail]);
+  }, [projectId, fetchContentBlog]);
 
   // Determine the color of the status circle
   const getStatusColor = (status: string) => {
@@ -63,9 +63,9 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
               {data ? (
                 <div>
                   <h2 className="mb-8 flex items-center text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl sm:leading-tight">
-                    {data.projectName}
+                    {data.projectDetail.projectName}
                     <span
-                      className={`ml-2 inline-block h-4 w-4 rounded-full ${getStatusColor(data.status)}`}
+                      className={`ml-2 inline-block h-4 w-4 rounded-full ${getStatusColor(data.projectDetail.status)}`}
                       aria-label="Project Status"
                     ></span>
                   </h2>
@@ -108,7 +108,9 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
                               <path d="M13.2637 3.3697H7.64754V2.58105C8.19721 2.43765 8.62738 1.91189 8.62738 1.31442C8.62738 0.597464 8.02992 0 7.28906 0C6.54821 0 5.95074 0.597464 5.95074 1.31442C5.95074 1.91189 6.35702 2.41376 6.93058 2.58105V3.3697H1.31442C0.597464 3.3697 0 3.96716 0 4.68412V13.2637C0 13.9807 0.597464 14.5781 1.31442 14.5781H13.2637C13.9807 14.5781 14.5781 13.9807 14.5781 13.2637V4.68412C14.5781 3.96716 13.9807 3.3697 13.2637 3.3697ZM6.6677 1.31442C6.6677 0.979841 6.93058 0.716957 7.28906 0.716957C7.62364 0.716957 7.91042 0.979841 7.91042 1.31442C7.91042 1.649 7.64754 1.91189 7.28906 1.91189C6.95448 1.91189 6.6677 1.6251 6.6677 1.31442ZM1.31442 4.08665H13.2637C13.5983 4.08665 13.8612 4.34954 13.8612 4.68412V6.45261H0.716957V4.68412C0.716957 4.34954 0.979841 4.08665 1.31442 4.08665ZM13.2637 13.8612H1.31442C0.979841 13.8612 0.716957 13.5983 0.716957 13.2637V7.16957H13.8612V13.2637C13.8612 13.5983 13.5983 13.8612 13.2637 13.8612Z" />
                             </svg>
                           </span>
-                          {convertToVietnameseDate(data.startDate)}
+                          {convertToVietnameseDate(
+                            data.projectDetail.startDate,
+                          )}
                         </p>
                         <p className="mr-5 text-base font-medium text-body-color">
                           -
@@ -132,48 +134,53 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
                               <path d="M13.2637 3.3697H7.64754V2.58105C8.19721 2.43765 8.62738 1.91189 8.62738 1.31442C8.62738 0.597464 8.02992 0 7.28906 0C6.54821 0 5.95074 0.597464 5.95074 1.31442C5.95074 1.91189 6.35702 2.41376 6.93058 2.58105V3.3697H1.31442C0.597464 3.3697 0 3.96716 0 4.68412V13.2637C0 13.9807 0.597464 14.5781 1.31442 14.5781H13.2637C13.9807 14.5781 14.5781 13.9807 14.5781 13.2637V4.68412C14.5781 3.96716 13.9807 3.3697 13.2637 3.3697ZM6.6677 1.31442C6.6677 0.979841 6.93058 0.716957 7.28906 0.716957C7.62364 0.716957 7.91042 0.979841 7.91042 1.31442C7.91042 1.649 7.64754 1.91189 7.28906 1.91189C6.95448 1.91189 6.6677 1.6251 6.6677 1.31442ZM1.31442 4.08665H13.2637C13.5983 4.08665 13.8612 4.34954 13.8612 4.68412V6.45261H0.716957V4.68412C0.716957 4.34954 0.979841 4.08665 1.31442 4.08665ZM13.2637 13.8612H1.31442C0.979841 13.8612 0.716957 13.5983 0.716957 13.2637V7.16957H13.8612V13.2637C13.8612 13.5983 13.5983 13.8612 13.2637 13.8612Z" />
                             </svg>
                           </span>
-                          {convertToVietnameseDate(data.endDate)}
+                          {convertToVietnameseDate(data.projectDetail.endDate)}
                         </p>
                       </div>
                     </div>
                   </div>
                   <div className="mb-10 flex flex-wrap items-center justify-between border-b border-body-color border-opacity-10 pb-4 dark:border-white dark:border-opacity-10">
                     <p className="mb-6 text-lg dark:text-gray-300">
-                      {data.description}
+                      {data.projectDetail.description}
                     </p>
                   </div>
 
                   <div className="mt-8">
                     <div className="flex flex-col space-y-4">
-                      {data.projectContent.map((content, index) => (
-                        <div key={index} className="flex flex-col items-start">
-                          {content.type === "text" && (
-                            <p className="mb-10 text-base font-medium leading-relaxed text-body-color sm:text-lg sm:leading-relaxed lg:text-base lg:leading-relaxed xl:text-lg xl:leading-relaxed">
-                              {content.content
-                                .split("<br/>")
-                                .map((text, index) => (
-                                  <React.Fragment key={index}>
-                                    {text}
-                                    {index <
-                                      content.content.split("<br/>").length -
-                                        1 && <br />}
-                                  </React.Fragment>
-                                ))}
-                            </p>
-                          )}
-                          {content.type === "image" && content.path && (
-                            <div className="mb-10 w-full overflow-hidden rounded">
-                              <div className="relative aspect-[97/60] w-full sm:aspect-[97/44]">
-                                <img
-                                  src={content.path}
-                                  alt={`Project content ${index}`}
-                                  className="h-full w-full object-cover object-center"
-                                />
+                      {data.projectDetail.projectContent.map(
+                        (content, index) => (
+                          <div
+                            key={index}
+                            className="flex flex-col items-start"
+                          >
+                            {content.type === "text" && (
+                              <p className="mb-10 text-base font-medium leading-relaxed text-body-color sm:text-lg sm:leading-relaxed lg:text-base lg:leading-relaxed xl:text-lg xl:leading-relaxed">
+                                {content.content
+                                  .split("<br>")
+                                  .map((text, index) => (
+                                    <React.Fragment key={index}>
+                                      {text}
+                                      {index <
+                                        content.content.split("<br>").length -
+                                          1 && <br />}
+                                    </React.Fragment>
+                                  ))}
+                              </p>
+                            )}
+                            {content.type === "image" && content.path && (
+                              <div className="mb-10 w-full overflow-hidden rounded">
+                                <div className="relative aspect-[97/60] w-full sm:aspect-[97/44]">
+                                  <img
+                                    src={content.path}
+                                    alt={`Project content ${index}`}
+                                    className="h-full w-full object-cover object-center"
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                            )}
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
                 </div>
@@ -183,25 +190,29 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
                 </p>
               )}
               <div className="items-center justify-between sm:flex">
+                {/* Tags Section */}
                 <div className="mb-5">
                   <h4 className="mb-3 text-sm font-medium text-body-color">
-                    Popular Tags :
+                    Tags :
                   </h4>
-                  <div className="flex items-center">
-                    <TagButton text="Design" />
-                    <TagButton text="Development" />
-                    <TagButton text="Info" />
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {data?.tags.map((tag) => (
+                      <TagButton key={tag.tagName} text={`#${tag.tagName}`} />
+                    ))}
                   </div>
                 </div>
+
+                {/* Share Section */}
                 <div className="mb-5">
                   <h5 className="mb-3 text-sm font-medium text-body-color sm:text-right">
                     Share this post :
                   </h5>
-                  <div className="flex items-center sm:justify-end">
+                  <div className="flex items-center space-x-2 sm:justify-end">
                     <SharePost />
                   </div>
                 </div>
               </div>
+              
             </div>
           </div>
         </div>

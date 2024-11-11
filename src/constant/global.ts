@@ -8,4 +8,8 @@ export const global = {
     COMPLETED: "completed",
     PENDING: "pending",
   },
+  ROLE_NAME: {
+    NORMAL_USER: 'normal_user',
+    GUEST: 'guest',
+  },
 };

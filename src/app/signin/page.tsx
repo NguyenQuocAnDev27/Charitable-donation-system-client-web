@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getCookie, setCookie } from "@/utils/cookiesHandler";
+import { getCookie, setCookie, eraseCookie } from "@/utils/cookiesHandler";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
 import useAuthenticate from "@/store/hooks/useAuthenticate";
 import useGetInfoDetail from "@/store/hooks/useGetInfoDetail";
 import StorageUtil from "@/utils/storageUtil";
 import { User } from "@/interface";
 import { LOCAL_STORAGE_KEY } from "@/constant/localStorageKey";
+import { global } from "@/constant/global";
 
 const SigninPage = () => {
   const [email, setEmail] = useState(""); // State for email
@@ -27,7 +28,7 @@ const SigninPage = () => {
     login: fetchAuth,
   } = useAuthenticate();
   const {
-    data: dataUserDetai,
+    data: dataUserDetail,
     loading: loadingGetInfo,
     error: errorGetInfo,
     success: successGetInfo,
@@ -59,6 +60,7 @@ const SigninPage = () => {
 
       fetchInfo(email);
     } else if (errorAuth) {
+      setLoadingLoginAPI(false);
       window.alert(errorAuth);
     }
   }, [loadingAuth, successAuth, errorAuth, rememberMe]);
@@ -67,16 +69,24 @@ const SigninPage = () => {
     if (successGetInfo) {
       const expTime = rememberMe ? 7824 : 1;
 
+      if(dataUserDetail.roleName !== global.ROLE_NAME.NORMAL_USER) {
+        window.location.href = process.env.NEXT_PUBLIC_ADMIN_LOGIN_URL;
+        eraseCookie(COOKIE_KEYS.ACCESS_TOKEN);
+        eraseCookie(COOKIE_KEYS.REFRESH_TOKEN);
+        return;
+      }
+
       console.log("Saving user data into Cookie ...");
-      setCookie(COOKIE_KEYS.USER_EMAIL, dataUserDetai.email, expTime);
-      setCookie(COOKIE_KEYS.USER_ID, `${dataUserDetai.userId}`, expTime);
+      setCookie(COOKIE_KEYS.USER_EMAIL, dataUserDetail.email, expTime);
+      setCookie(COOKIE_KEYS.USER_ID, `${dataUserDetail.userId}`, expTime);
       console.log("Saving user data into Storage...");
-      StorageUtil.save<User>(LOCAL_STORAGE_KEY.USER, dataUserDetai);
+      StorageUtil.save<User>(LOCAL_STORAGE_KEY.USER, dataUserDetail);
 
       setIsLoiginDone(true);
     } else if (errorGetInfo) {
       setErrorMessage(errorGetInfo);
     }
+    setLoadingLoginAPI(false);
   }, [loadingGetInfo, successGetInfo, errorGetInfo]);
 
   useEffect(() => {
@@ -89,6 +99,7 @@ const SigninPage = () => {
     try {
       // Call the signin function from useAuth hook
       e.preventDefault();
+      setLoadingLoginAPI(true);
       fetchAuth(email, password);
       console.log(`TEST call api auth state: ${successAuth}`);
     } catch (error) {

@@ -1,5 +1,3 @@
-import AboutSectionOne from "@/components/About/AboutSectionOne";
-import AboutSectionTwo from "@/components/About/AboutSectionTwo";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import { Metadata } from "next";
 
@@ -53,6 +51,7 @@ const AboutPage = () => {
 
             <strong>Facebook:</strong> <a href="https://www.facebook.com/SaigonUni.SGU" target="_blank" className="text-blue2 dark:text-blue3 hover:underline">Sai Gon University Charity</a> <br />
           </p>
+          <p className="text-red-500"><strong>*Lưu ý: Tổ chức này không có thật và chỉ được dựng nhằm đáp ứng nhu cầu làm đồ án</strong></p>
         </div>
       </section>
     </>
