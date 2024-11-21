@@ -34,7 +34,7 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
         <section className="bg-gray-50 pb-[120px] pt-[150px] dark:bg-gray-900">
           <div className="container">
             <div className="-mx-4 flex flex-wrap justify-center">
-              <div className="w-full px-4 lg:w-8/12 text-center">
+              <div className="w-full px-4 text-center lg:w-8/12">
                 <p>Bạn cần đăng nhập để xem chi tiết</p>
               </div>
             </div>
@@ -82,27 +82,27 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
                 <div>
                   <h2 className="mb-8 flex items-center text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl sm:leading-tight">
                     {data.projectDetail.projectName}
-                    <span
-                      className={`ml-2 inline-block h-4 w-4 rounded-full ${getStatusColor(data.projectDetail.status)}`}
-                      aria-label="Project Status"
-                    ></span>
+                    <div>
+                      <span
+                        className={`ml-2 inline-block h-4 w-4 rounded-full ${getStatusColor(data.projectDetail.status)}`}
+                        aria-label="Project Status"
+                      ></span>
+                    </div>
                   </h2>
                   <div className="mb-10 flex flex-wrap items-center justify-between border-b border-body-color border-opacity-10 pb-4 dark:border-white dark:border-opacity-10">
                     <div className="flex flex-wrap items-center">
                       <div className="mb-5 mr-10 flex items-center">
                         <div className="mr-4">
                           <div className="relative h-10 w-10 overflow-hidden rounded-full">
-                            <Image
-                              src="/images/blog/author-02.png"
-                              alt="author"
-                              fill
-                            />
+                            <div className="h-10 w-10 bg-purple-500">
+                              <></>
+                            </div>
                           </div>
                         </div>
                         <div className="w-full">
                           <span className="mb-1 text-base font-medium text-body-color">
-                            Tổ chức thực hiện{" "}
-                            <span>/project manager name/</span>
+                            Thực hiện bởi{" "}
+                            <span>{data.projectDetail.projectManagerName}</span>
                           </span>
                         </div>
                       </div>

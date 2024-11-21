@@ -57,7 +57,7 @@ const UserPage = () => {
         <div className="container mx-auto">
           <div className="mt-5">
             <p>
-              <strong>Full Name: </strong> {userData.full_name}
+              <strong>Họ tên: </strong> {userData.full_name}
             </p>{" "}
             <br />
             <p>
@@ -65,7 +65,7 @@ const UserPage = () => {
             </p>{" "}
             <br />
             <p>
-              <strong>Phone Number: </strong> {userData.phone_number}
+              <strong>Số điện thoại: </strong> {userData.phone_number}
             </p>{" "}
             <br />
           </div>

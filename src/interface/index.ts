@@ -27,6 +27,7 @@ export interface ProjectDetailResponse {
   startDate: string; // ISO date format
   endDate: string; // ISO date format
   status: string; // e.g., "pending"
+  projectManagerName: string;
   projectContent: ProjectContent[];
 }
 

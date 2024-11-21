@@ -15,6 +15,9 @@ const DonationListPage = () => {
   const [startDay, setStartDay] = useState("");
   const [endDay, setEndDay] = useState("");
 
+  const [showLoading, setShowLoading] = useState(false); // State to handle 2-second loading
+  const loadingDelay = 1000;
+
   // Validation state
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -90,6 +93,29 @@ const DonationListPage = () => {
   };
 
   const totalPages = data?.totalPages || 1;
+
+  useEffect(() => {
+    if (loading) {
+      setShowLoading(true);
+      setTimeout(() => {
+        setShowLoading(false);
+      }, loadingDelay);
+    }
+  }, [loading]);
+
+  // Show loading spinner when loading state is true
+  if (showLoading) {
+    return (
+      <>
+        <Breadcrumb pageName="Danh sách các giao dịch ủng hộ" description="" />
+        <section className="pb-[120px] pt-[20px]">
+          <div className="container mx-auto p-4">
+            <Loading />
+          </div>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>
@@ -199,7 +225,6 @@ const DonationListPage = () => {
           </div>
 
           {/* Rest of the table and pagination */}
-          {loading && <Loading />}
           {error && (
             <div className="text-center text-red-500">
               <p>Lỗi: {error}</p>
