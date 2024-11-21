@@ -12,6 +12,8 @@ import Testimonials from "@/components/Testimonials";
 import Video from "@/components/Video";
 import { Metadata } from "next";
 
+import localFont from 'next/font/local';
+
 export const metadata: Metadata = {
   title: "SGU charity",
   description: "Đây là trang chủ",

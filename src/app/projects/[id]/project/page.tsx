@@ -16,6 +16,8 @@ import React from "react";
 import ScrollUp from "@/components/Common/ScrollUp";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import useContentBlog from "@/store/hooks/useContentBlog";
+import { getCookie } from "@/utils/cookiesHandler";
+import { COOKIE_KEYS } from "@/constant/cookieKey";
 
 interface ProjectDetailProps {
   params: {
@@ -25,6 +27,22 @@ interface ProjectDetailProps {
 
 const ProjectDetail = ({ params }: ProjectDetailProps) => {
   const projectId = parseInt(params.id, 10);
+  const token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+  if (!token) {
+    return (
+      <>
+        <section className="bg-gray-50 pb-[120px] pt-[150px] dark:bg-gray-900">
+          <div className="container">
+            <div className="-mx-4 flex flex-wrap justify-center">
+              <div className="w-full px-4 lg:w-8/12 text-center">
+                <p>Bạn cần đăng nhập để xem chi tiết</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
   const { data, loading, error, fetchContentBlog } = useContentBlog(projectId);
 
   useEffect(() => {
@@ -186,7 +204,7 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
                 </div>
               ) : (
                 <p className="text-center text-gray-500 dark:text-gray-400">
-                  No conetents available.
+                  Hiện không có chiến dịch được triển khai
                 </p>
               )}
               <div className="items-center justify-between sm:flex">
@@ -212,7 +230,6 @@ const ProjectDetail = ({ params }: ProjectDetailProps) => {
                   </div>
                 </div>
               </div>
-              
             </div>
           </div>
         </div>

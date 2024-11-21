@@ -16,39 +16,8 @@ const menuData: Menu[] = [
   {
     id: 5,
     title: "Chiến dịch",
+    path: "/projects",
     newTab: false,
-    submenu: [
-      {
-        id: 51,
-        title: "Hỗ trợ lũ bão yagi",
-        path: "/projects",
-        newTab: false,
-      },
-      {
-        id: 52,
-        title: "Xuân tình nguyện",
-        path: "/projects",
-        newTab: false,
-      },
-      {
-        id: 53,
-        title: "Mùa hè xanh",
-        path: "/projects",
-        newTab: false,
-      },
-      {
-        id: 54,
-        title: "Tết trung thu",
-        path: "/projects",
-        newTab: false,
-      },
-      {
-        id: 55,
-        title: "Khác",
-        path: "/projects",
-        newTab: false,
-      }
-    ]
   },
   {
     id: 4,

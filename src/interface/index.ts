@@ -55,6 +55,7 @@ export interface Transaction {
   date: string;
   donorName: string;
   projectName: string;
+  projectId: string;
 }
 
 export interface Pageable {

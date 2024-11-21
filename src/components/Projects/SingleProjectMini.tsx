@@ -38,13 +38,15 @@ const SingleProjectMini = ({
     <div className="rounded-lg border bg-white p-4 shadow-md dark:bg-gray-800">
       <div className="flex h-full flex-col justify-between">
         <div>
-          <Image
+          {/* <Image
             src="/images/projects/image_project.png"
             alt={project.projectName}
             width={300}
             height={200}
             className="h-48 w-full rounded-md object-cover"
-          />
+          /> */}
+          <div className="flex h-48 w-full items-center justify-center rounded-md bg-green-500"><></></div>
+
           <div className="mt-2 inline-block rounded-full bg-orange-200 px-2 py-1 text-white">
             <p className="text-orange-600">{timeRemaining(project.endDate)}</p>
           </div>
@@ -92,7 +94,8 @@ const SingleProjectMini = ({
             Xem thông tin
           </button>
 
-          <button className="mt-4 w-full rounded bg-blue2 py-2 text-white hover:bg-darkblue"
+          <button
+            className="mt-4 w-full rounded bg-blue2 py-2 text-white hover:bg-darkblue"
             onClick={onClickDonate}
           >
             Quyên góp
