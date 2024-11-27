@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { getCookie, setCookie, eraseCookie } from "@/utils/cookiesHandler";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
 import useAuthenticate from "@/store/hooks/useAuthenticate";
@@ -11,15 +11,18 @@ import StorageUtil from "@/utils/storageUtil";
 import { User } from "@/interface";
 import { LOCAL_STORAGE_KEY } from "@/constant/localStorageKey";
 import { global } from "@/constant/global";
+import useSignInGoogle from "@/store/hooks/useSignInGoogle";
 
 const SigninPage = () => {
-  const [email, setEmail] = useState(""); // State for email
-  const [password, setPassword] = useState(""); // State for password
-  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
-  const [loadingLoginAPI, setLoadingLoginAPI] = useState(false); // State for loading UI state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loadingLoginAPI, setLoadingLoginAPI] = useState(false);
   const [isLoginDone, setIsLoiginDone] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false); // State for "Remember Me" checkbox
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
+  const access_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+
   const {
     data: dataAuth,
     loading: loadingAuth,
@@ -27,6 +30,7 @@ const SigninPage = () => {
     error: errorAuth,
     login: fetchAuth,
   } = useAuthenticate();
+
   const {
     data: dataUserDetail,
     loading: loadingGetInfo,
@@ -35,53 +39,45 @@ const SigninPage = () => {
     fetchInfoDetail: fetchInfo,
   } = useGetInfoDetail();
 
-  useEffect(() => {
-    const access_token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
+  const {
+    data: dataAuthGoogle,
+    loading: loadingSignInGoogle,
+    error: errorSignInGoogle,
+    success: successSignInGoogle,
+    fetchSignInGoogle,
+  } = useSignInGoogle();
 
-    if (
-      access_token !== null &&
-      access_token !== undefined &&
-      access_token !== "" &&
-      access_token !== "undefined"
-    ) {
+  useEffect(() => {
+    if (access_token) {
       router.push("/");
     }
-  }, []);
+  }, [access_token]);
 
   useEffect(() => {
     if (successAuth) {
-      console.log("Saving access token ...");
       setCookie(COOKIE_KEYS.ACCESS_TOKEN, dataAuth.accessToken, 1);
-
       if (rememberMe) {
-        console.log("Saving refresh token ...");
         setCookie(COOKIE_KEYS.REFRESH_TOKEN, dataAuth.refreshToken, 7 * 24);
       }
-
       fetchInfo(email);
     } else if (errorAuth) {
       setLoadingLoginAPI(false);
-      window.alert(errorAuth);
+      setErrorMessage(errorAuth);
     }
   }, [loadingAuth, successAuth, errorAuth, rememberMe]);
 
   useEffect(() => {
     if (successGetInfo) {
       const expTime = rememberMe ? 7824 : 1;
-
-      if(dataUserDetail.roleName !== global.ROLE_NAME.NORMAL_USER) {
+      if (dataUserDetail.roleName !== global.ROLE_NAME.NORMAL_USER) {
         window.location.href = process.env.NEXT_PUBLIC_ADMIN_LOGIN_URL;
         eraseCookie(COOKIE_KEYS.ACCESS_TOKEN);
         eraseCookie(COOKIE_KEYS.REFRESH_TOKEN);
         return;
       }
-
-      console.log("Saving user data into Cookie ...");
       setCookie(COOKIE_KEYS.USER_EMAIL, dataUserDetail.email, expTime);
       setCookie(COOKIE_KEYS.USER_ID, `${dataUserDetail.userId}`, expTime);
-      console.log("Saving user data into Storage...");
       StorageUtil.save<User>(LOCAL_STORAGE_KEY.USER, dataUserDetail);
-
       setIsLoiginDone(true);
     } else if (errorGetInfo) {
       setErrorMessage(errorGetInfo);
@@ -96,16 +92,51 @@ const SigninPage = () => {
   }, [isLoginDone]);
 
   const handleSignIn = (e: React.FormEvent) => {
-    try {
-      // Call the signin function from useAuth hook
-      e.preventDefault();
-      setLoadingLoginAPI(true);
-      fetchAuth(email, password);
-      console.log(`TEST call api auth state: ${successAuth}`);
-    } catch (error) {
-      setErrorMessage("Login failed. Please check your credentials."); // Show error message
-    }
+    e.preventDefault();
+    setLoadingLoginAPI(true);
+    fetchAuth(email, password);
   };
+
+  // Handle Google login success
+  const handleGoogleLoginSuccess = async (response: any) => {
+    const { credential } = response;
+    console.log("Google login success:", response);
+    // Send token to backend or handle Google login directly in the app
+    await fetchAuthWithGoogle(credential);
+  };
+
+  const handleGoogleLoginFailure = () => {
+    console.error("Google login failed");
+    setErrorMessage("Google login failed. Please try again.");
+  };
+
+  const fetchAuthWithGoogle = async (googleToken: string) => {
+    // Send Google token to backend for validation or handle directly
+    console.log("Google token:", googleToken);
+    fetchSignInGoogle(googleToken);
+  };
+
+  useEffect(() => {
+    if (successSignInGoogle) {
+      setCookie(COOKIE_KEYS.ACCESS_TOKEN, dataAuthGoogle.accessToken, 1);
+      if (rememberMe) {
+        setCookie(
+          COOKIE_KEYS.REFRESH_TOKEN,
+          dataAuthGoogle.refreshToken,
+          7 * 24,
+        );
+      }
+      fetchInfo(dataAuthGoogle.email);
+    } else if (errorSignInGoogle) {
+      setLoadingLoginAPI(false);
+      setErrorMessage("Đăng nhập thất bại!");
+    }
+  }, [
+    loadingSignInGoogle,
+    successSignInGoogle,
+    errorSignInGoogle,
+    fetchSignInGoogle,
+  ]);
 
   return (
     <>
@@ -121,13 +152,14 @@ const SigninPage = () => {
                   Đăng nhập để sử dụng các chức năng hữu ích hơn nhé!
                 </p>
 
-                {/* Show error message if login fails */}
+                {/* Display error message if login fails */}
                 {errorMessage && (
                   <div className="mb-6 text-center text-red-500">
                     {errorMessage}
                   </div>
                 )}
 
+                {/* Sign-in Form */}
                 <form onSubmit={handleSignIn}>
                   <div className="mb-8">
                     <label
@@ -220,74 +252,28 @@ const SigninPage = () => {
                       {loadingLoginAPI ? "Đang đăng nhập..." : "Đăng nhập"}
                     </button>
                   </div>
-                </form>
 
-                <p className="text-center text-base font-medium text-body-color">
-                  Bạn chưa có tài khoản?{" "}
-                  <Link href="/signup" className="text-primary hover:underline">
-                    Đăng kí ở đây
-                  </Link>
-                </p>
+                  {/* Google Sign-In Button */}
+                  <div className="mb-6 mt-10">
+                    <GoogleOAuthProvider
+                      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+                    >
+                      {/* Replace with your Google Client ID */}
+                      <GoogleLogin
+                        onSuccess={handleGoogleLoginSuccess}
+                        onError={handleGoogleLoginFailure}
+                        useOneTap
+                        shape="pill"
+                        text="signin_with"
+                        theme="outline"
+                        width="100%"
+                      />
+                    </GoogleOAuthProvider>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
-        </div>
-        <div className="absolute left-0 top-0 z-[-1]">
-          <svg
-            width="1440"
-            height="969"
-            viewBox="0 0 1440 969"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <mask
-              id="mask0_95:1005"
-              style={{ maskType: "alpha" }}
-              maskUnits="userSpaceOnUse"
-              x="0"
-              y="0"
-              width="1440"
-              height="969"
-            >
-              <rect width="1440" height="969" fill="#090E34" />
-            </mask>
-            <g mask="url(#mask0_95:1005)">
-              <path
-                opacity="0.1"
-                d="M1086.96 297.978L632.959 554.978L935.625 535.926L1086.96 297.978Z"
-                fill="url(#paint0_linear_95:1005)"
-              />
-              <path
-                opacity="0.1"
-                d="M1324.5 755.5L1450 687V886.5L1324.5 967.5L-10 288L1324.5 755.5Z"
-                fill="url(#paint1_linear_95:1005)"
-              />
-            </g>
-            <defs>
-              <linearGradient
-                id="paint0_linear_95:1005"
-                x1="1178.4"
-                y1="151.853"
-                x2="780.959"
-                y2="453.581"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#4A6CF7" />
-                <stop offset="1" stopColor="#4A6CF7" stopOpacity="0" />
-              </linearGradient>
-              <linearGradient
-                id="paint1_linear_95:1005"
-                x1="160.5"
-                y1="220"
-                x2="1099.45"
-                y2="1192.04"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#4A6CF7" />
-                <stop offset="1" stopColor="#4A6CF7" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-          </svg>
         </div>
       </section>
     </>

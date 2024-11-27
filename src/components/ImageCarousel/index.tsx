@@ -44,9 +44,9 @@ const AutoScrollImages = ({ images }) => {
 
 const ImageCarousel = () => {
   const images = [
-    '/images/projects/image_project.png',
-    '/images/projects/image_project.png',
-    '/images/projects/image_project.png',
+    '/images/projects/demo_1.jpg',
+    '/images/projects/demo_2.jpg',
+    '/images/projects/demo_3.jpg',
   ];
 
   return (

@@ -267,7 +267,18 @@ const DonationListPage = () => {
                             {donation.donorName || "Không biết"}
                           </td>
                           <td className="border px-2 py-3 sm:px-6">
-                            {new Date(donation.date).toLocaleString()}
+                            {(() => {
+                              try {
+                                const parsedDate = new Date(donation.date);
+                                if (isNaN(parsedDate.getTime())) {
+                                  console.log(donation.date)
+                                  return "Không rõ";
+                                }
+                                return parsedDate.toLocaleString();
+                              } catch (e) {
+                                return "Không rõ";
+                              }
+                            })()}
                           </td>
                           <td className="border px-2 py-3 sm:px-6">
                             {`${donation.projectName} - Mã ${donation.projectId}` ||
