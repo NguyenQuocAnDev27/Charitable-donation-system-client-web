@@ -17,6 +17,12 @@ const useSignInGoogleAPIState = createAPIState<SignInGoogleResponse>();
 const useSignInGoogle = () => {
   const { data, loading, error, success, setData, setLoading, setError, setSuccess } = useSignInGoogleAPIState();
 
+  const resetState = () => {
+    setData(null)
+    setError(null);
+    setSuccess(null);
+  };
+
   const fetchSignInGoogle = useCallback(async (idToken: string) => {
     setLoading(true);
     setError(null);
@@ -63,7 +69,7 @@ const useSignInGoogle = () => {
     await fetchData();
   }, [setData, setLoading, setError, setSuccess]);
 
-  return { data, loading, error, success, fetchSignInGoogle };
+  return { data, loading, error, success, fetchSignInGoogle, resetState };
 };
 
 export default useSignInGoogle;

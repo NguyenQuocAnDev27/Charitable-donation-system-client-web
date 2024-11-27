@@ -16,6 +16,7 @@ interface AuthState extends ResponseState<AuthResponse> {
    * @param body - Object containing the email and password for authentication.
    * @returns Promise<void>
    */
+  resetState: () => void;
   authenticate: (body: SigninBody) => Promise<void>;
 }
 
@@ -39,6 +40,10 @@ const useAuthStore = create<AuthState>((set) => ({
    * 
    * @param body - SigninBody object containing the user's email and password
    */
+  resetState: () => {
+    set({ loading: true, error: null, success: null, data: null });
+  },
+
   authenticate: async (body: SigninBody) => {
     // Reset state and set loading to true
     set({ loading: true, error: null, success: null, data: null });

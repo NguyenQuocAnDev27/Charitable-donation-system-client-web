@@ -15,6 +15,13 @@ const useGetInfoDetail = () => {
   const { data, loading, error, success, setData, setLoading, setError, setSuccess } = useInfoAPIState();
   const { refreshAccessToken } = useTokenStore();
 
+  const resetState = () => {
+    setData(null)
+    setError(null);
+    setSuccess(null);
+  };
+
+
   const fetchInfoDetail = useCallback(
     async (email: string) => {
       setLoading(true);
@@ -78,7 +85,7 @@ const useGetInfoDetail = () => {
     [refreshAccessToken, setData, setLoading, setError, setSuccess]
   );
 
-  return { data, loading, error, success, fetchInfoDetail };
+  return { data, loading, error, success, fetchInfoDetail, resetState };
 };
 
 export default useGetInfoDetail;

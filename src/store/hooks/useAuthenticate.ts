@@ -10,7 +10,7 @@ import { SigninBody } from '@/interface'
  * @returns {object} - Contains the authentication state and the login function.
  */
 const useAuthenticate = () => {
-  const { data, loading, error, success, authenticate } = useAuthStore()
+  const { data, loading, error, success, authenticate, resetState } = useAuthStore()
 
   /**
    * Initiates the login process by sending the user's email and password.
@@ -18,6 +18,7 @@ const useAuthenticate = () => {
    * @param {string} email - The user's email address.
    * @param {string} password - The user's password.
    */
+
   const login = useCallback(
     (email: string, password: string) => {
       const signinData: SigninBody = { email, password }
@@ -26,7 +27,7 @@ const useAuthenticate = () => {
     [authenticate]
   )
 
-  return { data, loading, error, success, login }
+  return { data, loading, error, success, login, resetState }
 }
 
 export default useAuthenticate

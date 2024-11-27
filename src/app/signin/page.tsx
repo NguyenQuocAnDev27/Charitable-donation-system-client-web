@@ -29,6 +29,7 @@ const SigninPage = () => {
     success: successAuth,
     error: errorAuth,
     login: fetchAuth,
+    resetState: resetAuth
   } = useAuthenticate();
 
   const {
@@ -37,6 +38,7 @@ const SigninPage = () => {
     error: errorGetInfo,
     success: successGetInfo,
     fetchInfoDetail: fetchInfo,
+    resetState: resetStateInfoDetail,
   } = useGetInfoDetail();
 
   const {
@@ -45,13 +47,29 @@ const SigninPage = () => {
     error: errorSignInGoogle,
     success: successSignInGoogle,
     fetchSignInGoogle,
+    resetState: resetStateSignInGoogle,
   } = useSignInGoogle();
 
+  // Function to reset all states
+  const resetState = () => {
+    setEmail("");
+    setPassword("");
+    setErrorMessage("");
+    setLoadingLoginAPI(false);
+    setIsLoiginDone(false);
+    setRememberMe(false);
+  };
+
+  // Reset state when component mounts or on page load
   useEffect(() => {
-    if (access_token) {
-      router.push("/");
-    }
-  }, [access_token]);
+    resetState();
+  }, []); // Empty dependency array ensures it runs only once on page load
+
+  // useEffect(() => {
+  //   if (access_token) {
+  //     router.push("/");
+  //   }
+  // }, [access_token]);
 
   useEffect(() => {
     if (successAuth) {
@@ -83,13 +101,20 @@ const SigninPage = () => {
       setErrorMessage(errorGetInfo);
     }
     setLoadingLoginAPI(false);
-  }, [loadingGetInfo, successGetInfo, errorGetInfo]);
-
-  useEffect(() => {
-    if (isLoginDone) {
+    if (successGetInfo) {
+      console.log("Go to dashboard")
+      resetStateInfoDetail()
+      resetAuth()
+      resetStateSignInGoogle()
       router.push("/");
     }
-  }, [isLoginDone]);
+  }, [loadingGetInfo, successGetInfo, errorGetInfo]);
+
+  // useEffect(() => {
+  //   if (isLoginDone) {
+  //     router.push("/");
+  //   }
+  // }, [isLoginDone]);
 
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,22 +122,16 @@ const SigninPage = () => {
     fetchAuth(email, password);
   };
 
-  // Handle Google login success
   const handleGoogleLoginSuccess = async (response: any) => {
     const { credential } = response;
-    console.log("Google login success:", response);
-    // Send token to backend or handle Google login directly in the app
-    await fetchAuthWithGoogle(credential);
+    fetchAuthWithGoogle(credential);
   };
 
   const handleGoogleLoginFailure = () => {
-    console.error("Google login failed");
     setErrorMessage("Google login failed. Please try again.");
   };
 
   const fetchAuthWithGoogle = async (googleToken: string) => {
-    // Send Google token to backend for validation or handle directly
-    console.log("Google token:", googleToken);
     fetchSignInGoogle(googleToken);
   };
 
@@ -131,12 +150,7 @@ const SigninPage = () => {
       setLoadingLoginAPI(false);
       setErrorMessage("Đăng nhập thất bại!");
     }
-  }, [
-    loadingSignInGoogle,
-    successSignInGoogle,
-    errorSignInGoogle,
-    fetchSignInGoogle,
-  ]);
+  }, [loadingSignInGoogle, successSignInGoogle, errorSignInGoogle]);
 
   return (
     <>

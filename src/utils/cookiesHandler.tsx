@@ -1,6 +1,3 @@
-// src/utils/cookieHandler.tsx
-'use-client';
-
 // Set
 export const setCookie = (name: string, value: string, hours: number = 24 * 7) => {
   let expires = "";
@@ -8,8 +5,12 @@ export const setCookie = (name: string, value: string, hours: number = 24 * 7) =
     const date = new Date();
     date.setTime(date.getTime() + hours * 60 * 60 * 1000);
     expires = "; expires=" + date.toUTCString();
+  } else {
+    expires = "; expires=Session"; // Default to session cookie if hours is 0
   }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+
+  // Remove the Secure flag entirely for HTTP (this will work for both HTTP and HTTPS)
+  document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Strict`;
 };
 
 // Get
@@ -26,8 +27,7 @@ export const getCookie = (name: string) => {
   return null;
 };
 
-
 // Delete
 export const eraseCookie = (name: string) => {
-  document.cookie = name + "=; Max-Age=-99999999;";
+  document.cookie = `${name}=; Max-Age=-99999999; path=/; SameSite=Strict`;
 };
