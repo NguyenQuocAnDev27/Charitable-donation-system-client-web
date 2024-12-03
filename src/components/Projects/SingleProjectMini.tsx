@@ -45,7 +45,19 @@ const SingleProjectMini = ({
             height={200}
             className="h-48 w-full rounded-md object-cover"
           /> */}
-          <div className="flex h-48 w-full items-center justify-center rounded-md bg-green-500"><></></div>
+          {project.imageProject === null ? (
+            <div className="flex h-48 w-full items-center justify-center rounded-md bg-green-500">
+              <></>
+            </div>
+          ) : (
+            <img
+              src={`${process.env.NEXT_PUBLIC_SERVER_API_URL}/${project.imageProject}`}
+              alt={project.projectName}
+              width={300}
+              height={200}
+              className="h-48 w-full rounded-md object-cover"
+            />
+          )}
 
           <div className="mt-2 inline-block rounded-full bg-orange-200 px-2 py-1 text-white">
             <p className="text-orange-600">{timeRemaining(project.endDate)}</p>

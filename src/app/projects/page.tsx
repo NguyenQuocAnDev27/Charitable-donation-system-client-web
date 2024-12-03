@@ -19,7 +19,7 @@ import useCreateTransaction from "@/store/hooks/useCreateTransaction";
 const Projects = () => {
   const [currentPage, setCurrentPage] = useState(0); // Zero-based current page
   const projectsPerPage = 15; // Number of projects per page
-  const [searchQuery, setSearchQuery] = useState(""); // For search
+  const [searchKey, setSearchKey] = useState(""); // For search
   const router = useRouter();
 
   const [showLoading, setShowLoading] = useState(true); // State to handle 2-second loading
@@ -42,7 +42,7 @@ const Projects = () => {
     loading,
     error,
     changePageNumber,
-    updateQueryString,
+    updateSearchString,
   } = useFetchProjectsByPage();
 
   const {
@@ -61,8 +61,8 @@ const Projects = () => {
   // Effect to fetch projects when the search query changes
   useEffect(() => {
     setCurrentPage(0); // Reset to the first page when a new search is performed
-    updateQueryString(searchQuery); // Fetch projects based on the new search query, even if it's empty
-  }, [searchQuery, updateQueryString]);
+    updateSearchString(searchKey); // Fetch projects based on the new search query, even if it's empty
+  }, [searchKey, updateSearchString]);
 
   // Effect to handle the 2-second loading simulation when `loading` is false
   useEffect(() => {
@@ -164,7 +164,7 @@ const Projects = () => {
             <SearchBar
               placeholder="Tìm kiếm bằng Tên chiến dịch"
               onSearch={(query) => {
-                setSearchQuery(query); // Update search query
+                setSearchKey(query); // Update search query
               }}
             />
           </Suspense>

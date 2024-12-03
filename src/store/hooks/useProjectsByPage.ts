@@ -17,7 +17,7 @@ const useFetchProjectsByPage = () => {
 
   // State for pagination and query string
   const [numberPage, setNumberPage] = useState(0);
-  const [queryString, setQueryString] = useState('');
+  const [searchKey, setSearchKey] = useState('');
 
   const fetchProjectsPage = useCallback(async () => {
     setLoading(true);
@@ -36,7 +36,7 @@ const useFetchProjectsByPage = () => {
             },
             params: {
               number: numberPage,
-              query: queryString,
+              searchKey: searchKey,
             },
           }
         );
@@ -74,23 +74,23 @@ const useFetchProjectsByPage = () => {
     };
 
     await fetchData();
-  }, [numberPage, queryString, refreshAccessToken, setData, setLoading, setError, setSuccess]);
+  }, [numberPage, searchKey, refreshAccessToken, setData, setLoading, setError, setSuccess]);
 
   // Fetch data whenever numberPage or queryString changes
   useEffect(() => {
     fetchProjectsPage();
-  }, [numberPage, queryString, fetchProjectsPage]);
+  }, [numberPage, searchKey, fetchProjectsPage]);
 
   // Only update the page number or query string
   const changePageNumber = (page: number) => {
     setNumberPage(page);
   };
 
-  const updateQueryString = (query: string) => {
-    setQueryString(query);
+  const updateSearchString = (key: string) => {
+    setSearchKey(key);
   };
 
-  return { data, loading, error, success, fetchProjectsPage, changePageNumber, updateQueryString };
+  return { data, loading, error, success, fetchProjectsPage, changePageNumber, updateSearchString };
 };
 
 export default useFetchProjectsByPage;

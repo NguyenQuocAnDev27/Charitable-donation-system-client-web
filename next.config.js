@@ -40,6 +40,36 @@ const nextConfig = {
         hostname: "cdn.sanity.io",
         pathname: "/**", // Match all image paths from the CDN
       },
+      {
+        /**
+         * Allow image optimization from the Sanity CDN (cdn.sanity.io).
+         * 
+         * NOTE FOR DEPLOYMENT:
+         * Ensure this configuration is correct if Sanity is used in production. 
+         * If additional CDNs are integrated later, you'll need to add more entries 
+         * to `remotePatterns`. Remember to adjust the `hostname` and `protocol` based 
+         * on the new CDN.
+         */
+        protocol: "https",
+        hostname: "localhost",
+        port: "8080",
+        pathname: "/**", // Match all image paths from the CDN
+      },
+      {
+        /**
+         * Allow image optimization from the Sanity CDN (cdn.sanity.io).
+         * 
+         * NOTE FOR DEPLOYMENT:
+         * Ensure this configuration is correct if Sanity is used in production. 
+         * If additional CDNs are integrated later, you'll need to add more entries 
+         * to `remotePatterns`. Remember to adjust the `hostname` and `protocol` based 
+         * on the new CDN.
+         */
+        protocol: "https",
+        hostname: "searchlaw.name.vn",
+        port: "8080",
+        pathname: "/**", // Match all image paths from the CDN
+      },
     ],
   },
 

@@ -1,4 +1,5 @@
 import { ProjectManager } from "./ProjectManager";
+import { User } from "./User";
 
 export interface Project {
   projectId: number;
@@ -9,5 +10,6 @@ export interface Project {
   startDate: string;
   endDate: string;
   status: string;
-  projectManager: ProjectManager;
+  projectManager: User;
+  imageProject: string;
 }
