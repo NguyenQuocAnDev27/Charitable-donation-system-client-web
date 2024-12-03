@@ -1,7 +1,7 @@
 // src/app/projects/[id][project]/page.tsx
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import useFetchProjectDetail from "@/store/hooks/useFetchProjectDetail";
 import {
   convertStatusToVietnamese,
@@ -19,14 +19,15 @@ import useContentBlog from "@/store/hooks/useContentBlog";
 import { getCookie } from "@/utils/cookiesHandler";
 import { COOKIE_KEYS } from "@/constant/cookieKey";
 
-interface ProjectDetailProps {
+type ProjectDetailProps = Promise<{
   params: {
     id: string;
   };
-}
+}>
 
-const ProjectDetail = ({ params }: ProjectDetailProps) => {
-  const projectId = parseInt(params.id, 10);
+const ProjectDetail = (props: {params: ProjectDetailProps}) => {
+  const projectDetailProps = use(props.params);
+  const projectId = parseInt(projectDetailProps.params.id, 10);
   const token = getCookie(COOKIE_KEYS.ACCESS_TOKEN);
   if (!token) {
     return (
