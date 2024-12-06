@@ -21,17 +21,16 @@ This is a client-side web application designed for managing charitable donations
    ```bash
    git clone https://github.com/NguyenQuocAnDev27/Charitable-donation-system-client-web.git
 
-2. Install pnpm
-   ```bash
-   npm i pnpm
-
-4. Run
-   ```bash
-   pnpm install
-   pnpm dev
-   ```
-   
+2. Install package
    ```bash
    npm install
+
+3. Run for develop project
+   ```bash
    npm run dev
+   ```
+4. Run for final product launch
+   ```bash
+   npm run build
+   npm run start
    ```
