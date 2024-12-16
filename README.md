@@ -1,19 +1,18 @@
 # Charitable-donation-system-client-web
 
-This is a client-side web application designed for managing charitable donations, developed using **Next.js** and **Tailwind CSS**. This project aims to facilitate donate for users.
+This website is designed for donors and developed using **Next.js** and **Tailwind CSS**. The project aims to facilitate donations for donors who wish to contribute to higher education institutions.
 
 ## Features
 
-- User authentication and registration.
+- User authentication and registration. (Google Account Login)
 - Browse and donate to various charity projects.
-- Real-time donation tracking.
-- Dashboard for managing projects and user profile.
+- Real-time donation tracking. (Can delay update up to 5 min)
 
 ## Technologies Used
 
-- **Next.js**: Frontend framework.
+- **Next.js**: React-based frontend framework that runs on the Node.js engine, offering features like server-side rendering (SSR), static site generation (SSG), API routes, and optimized performance for building modern web applications.
 - **Tailwind CSS**: Utility-first CSS framework.
-- **TypeScript**: Strongly typed JavaScript.
+- **TypeScript**
 
 ## Setup
 
