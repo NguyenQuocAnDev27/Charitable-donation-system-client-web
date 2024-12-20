@@ -35,9 +35,18 @@ This website is designed for donors and developed using **Next.js** and **Tailwi
 ## Documents
 [Báo cáo dự án.pdf](https://github.com/user-attachments/files/18208829/Bao.cao.d.an.pdf)
 
-## Nguyễn Quốc An's Mobile App Project
-This app is build with React Native (In developing stage).<br />
-You can see my design UX on Figma [Click here](https://www.figma.com/design/de0oO1ulDj3JuYjAQqU7xL/CDS-mobile-app?node-id=0-1&t=sU0HzlIGzsIjMetp-1).
+# Other project
+## Backend 1
+This server is build with Spring Boot and Thymeleaf which is main server.<br />
+Github project link [Click here](https://github.com/NguyenQuocAnDev27/Charitable-donation-system-APIs).
+
+## Backend 2
+This server is build with Typesciprt and ExpressJS which is used for translate VI-EN language.<br />
+Github project link [Click here](https://github.com/NguyenQuocAnDev27/translate-server).
+
+## Nguyễn Quốc An's Mobile App Platform (In developing stage ⚙️)
+This app is build with React Native.<br />
+You can see my UX design on Figma [Click here](https://www.figma.com/design/de0oO1ulDj3JuYjAQqU7xL/CDS-mobile-app?node-id=0-1&t=sU0HzlIGzsIjMetp-1).
 
 ![CDS mobile app](https://github.com/user-attachments/assets/e6778ee5-3061-430b-975a-470a0f01e19a)
 
