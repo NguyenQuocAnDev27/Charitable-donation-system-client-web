@@ -33,3 +33,6 @@ This website is designed for donors and developed using **Next.js** and **Tailwi
    npm run build
    npm run start
    ```
+## Documents
+[Báo cáo dự án.pdf](https://github.com/user-attachments/files/18208829/Bao.cao.d.an.pdf)
+
