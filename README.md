@@ -36,8 +36,9 @@ This website is designed for donors and developed using **Next.js** and **Tailwi
 ## Documents
 [Báo cáo dự án.pdf](https://github.com/user-attachments/files/18208829/Bao.cao.d.an.pdf)
 
-## Nguyễn Quốc An's Mobile Project
-Mobile App Platform (In process)
+## Nguyễn Quốc An's Mobile App Project
+Mobile App Platform. This app is build with React Native (In process) -> 
 [View on Figma](https://www.figma.com/design/de0oO1ulDj3JuYjAQqU7xL/CDS-mobile-app?node-id=0-1&t=sU0HzlIGzsIjMetp-1)
+
 ![CDS mobile app](https://github.com/user-attachments/assets/e6778ee5-3061-430b-975a-470a0f01e19a)
 
